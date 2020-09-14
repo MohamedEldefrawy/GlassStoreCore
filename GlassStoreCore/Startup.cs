@@ -1,3 +1,4 @@
+using GlassStoreCore.BL.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using GlassStoreCore.Data;
-using GlassStoreCore.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +28,7 @@ namespace GlassStoreCore
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("MyConn")));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
