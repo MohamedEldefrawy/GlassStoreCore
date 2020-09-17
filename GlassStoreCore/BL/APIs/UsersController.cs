@@ -59,5 +59,26 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(userDto);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ApplicationUser>> DeleteUser(string id)
+        {
+            var user = await _glassStoreContext.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return BadRequest("Please Select a Valid user id");
+
+            }
+
+            _glassStoreContext.Users.Remove(user);
+            await _glassStoreContext.SaveChangesAsync();
+            await _glassStoreContext.DisposeAsync();
+
+            return Ok("User Has been deleted successfully");
+        }
+
+        []
+
     }
 }
