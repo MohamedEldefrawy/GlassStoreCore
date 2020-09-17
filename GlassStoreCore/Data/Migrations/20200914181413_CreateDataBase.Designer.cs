@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GlassStoreCore.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(GlassStoreContext))]
     [Migration("20200914181413_CreateDataBase")]
     partial class CreateDataBase
     {

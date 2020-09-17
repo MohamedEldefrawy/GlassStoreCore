@@ -26,15 +26,15 @@ namespace GlassStoreCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<GlassStoreContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MyConn")));
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<GlassStoreContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<ApplicationUser, GlassStoreContext>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
