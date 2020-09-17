@@ -45,6 +45,19 @@ namespace GlassStoreCore.BL.APIs
             return Ok(usersDtos);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ApplicationUser>> GetUser(string id)
+        {
+            var user = await _glassStoreContext.Users.FindAsync(id);
 
+            if (user == null)
+            {
+                return BadRequest("User not found please use valid id");
+            }
+
+            var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
+
+            return Ok(userDto);
+        }
     }
 }
