@@ -44,7 +44,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet("{id}")]
         public ActionResult<ApplicationUser> GetUser(string id)
         {
-            var user = _usersService.GetUser(id).Result;
+            var user = _usersService.GetUser(id);
 
             if (user == null)
             {
@@ -53,13 +53,14 @@ namespace GlassStoreCore.BL.APIs
 
             var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
 
+            _usersService.Dispose();
             return Ok(userDto);
         }
 
         [HttpDelete("{id}")]
         public ActionResult<ApplicationUser> DeleteUser(string id)
         {
-            var user = _usersService.GetUser(id).Result;
+            var user = _usersService.GetUser(id);
 
             if (user == null)
             {
@@ -99,6 +100,27 @@ namespace GlassStoreCore.BL.APIs
                 _usersService.Dispose();
                 return BadRequest("Please Enter valid data");
             }
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<ApplicationUser> UpdateUser(UserDto userDto, string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = _usersService.GetUser(id);
+
+            if (user == null)
+            {
+                return NotFound("Please Enter a valid user id");
+            }
+
+            user = _mapper.Mapper.Map<UserDto, ApplicationUser>(userDto);
+            _usersService.UpdateUser(user, id);
+            _usersService.Dispose();
+            return Ok();
         }
     }
 }

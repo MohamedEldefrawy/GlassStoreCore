@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data;
@@ -11,14 +12,12 @@ namespace GlassStoreCore.Services.UserService
     {
         private readonly GlassStoreContext _glassStoreContext;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
 
-        public UsersService(GlassStoreContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signManager)
+        public UsersService(GlassStoreContext context, UserManager<ApplicationUser> userManager)
         {
             _glassStoreContext = context;
             _userManager = userManager;
-            _signInManager = signManager;
         }
 
         public async Task<List<ApplicationUser>> GetAllUsers()
@@ -26,9 +25,9 @@ namespace GlassStoreCore.Services.UserService
             return await _glassStoreContext.Users.ToListAsync<ApplicationUser>();
         }
 
-        public async Task<ApplicationUser> GetUser(string id)
+        public ApplicationUser GetUser(string id)
         {
-            return await _glassStoreContext.Users.FindAsync(id);
+            return _glassStoreContext.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
         }
 
         public async void DeleteUser(ApplicationUser user)
@@ -40,6 +39,13 @@ namespace GlassStoreCore.Services.UserService
         public async Task<IdentityResult> AddUser(ApplicationUser user, string pw)
         {
             return await _userManager.CreateAsync(user, pw);
+        }
+
+        public async void UpdateUser(ApplicationUser user, string id)
+        {
+
+            _glassStoreContext.Entry(user).State = EntityState.Modified;
+            await _glassStoreContext.SaveChangesAsync();
         }
 
         public async void Dispose()
