@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Services.UserService;
@@ -15,7 +16,7 @@ namespace GlassStoreCore.BL.APIs
 
         public UsersController(IUsersService usersService)
         {
-            this._usersService = usersService;
+            _usersService = usersService;
         }
 
         public ActionResult<ApplicationUser> GetUsers()
@@ -67,8 +68,37 @@ namespace GlassStoreCore.BL.APIs
             }
 
             _usersService.DeleteUser(user);
+            _usersService.Dispose();
 
             return Ok("User Has been deleted successfully");
+        }
+
+        [HttpPost]
+        public ActionResult<ApplicationUser> CreateUser(CreateUserDto userDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var newUser = _mapper.Mapper.Map<CreateUserDto, ApplicationUser>(userDto);
+            var result = _usersService.AddUser(newUser, userDto.Password);
+
+            if (result.Result.Succeeded)
+            {
+                _usersService.Dispose();
+                return Ok();
+            }
+
+            else
+            {
+                foreach (var error in result.Result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+                _usersService.Dispose();
+                return BadRequest("Please Enter valid data");
+            }
         }
     }
 }

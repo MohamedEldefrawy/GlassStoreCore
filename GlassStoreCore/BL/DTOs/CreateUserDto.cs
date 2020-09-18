@@ -8,8 +8,6 @@ namespace GlassStoreCore.BL.DTOs
 {
     public class CreateUserDto
     {
-        public string Id { get; set; }
-
         [Required]
         public string UserName { get; set; }
         [Required]
