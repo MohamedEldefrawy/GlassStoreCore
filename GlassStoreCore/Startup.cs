@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using GlassStoreCore.Data;
+using GlassStoreCore.Services;
+using GlassStoreCore.Services.UserService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +28,8 @@ namespace GlassStoreCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IUsersService, UsersService>();
+
             services.AddDbContext<GlassStoreContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MyConn")));

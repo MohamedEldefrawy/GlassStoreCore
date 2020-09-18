@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
-using GlassStoreCore.Data;
-using Microsoft.AspNetCore.Http;
+using GlassStoreCore.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GlassStoreCore.BL.APIs
 {
@@ -15,17 +10,17 @@ namespace GlassStoreCore.BL.APIs
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly GlassStoreContext _glassStoreContext;
         private readonly ObjectMapper _mapper = new ObjectMapper();
+        private readonly IUsersService _usersService;
 
-        public UsersController(GlassStoreContext context)
+        public UsersController(IUsersService usersService)
         {
-            this._glassStoreContext = context;
+            this._usersService = usersService;
         }
 
-        public async Task<ActionResult<ApplicationUser>> GetUsers()
+        public ActionResult<ApplicationUser> GetUsers()
         {
-            var users = await _glassStoreContext.Users.ToListAsync<ApplicationUser>();
+            var users = _usersService.GetAllUsers().Result;
 
             if (users == null)
             {
@@ -46,9 +41,9 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApplicationUser>> GetUser(string id)
+        public ActionResult<ApplicationUser> GetUser(string id)
         {
-            var user = await _glassStoreContext.Users.FindAsync(id);
+            var user = _usersService.GetUser(id).Result;
 
             if (user == null)
             {
@@ -61,9 +56,9 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<ApplicationUser>> DeleteUser(string id)
+        public ActionResult<ApplicationUser> DeleteUser(string id)
         {
-            var user = await _glassStoreContext.Users.FindAsync(id);
+            var user = _usersService.GetUser(id).Result;
 
             if (user == null)
             {
@@ -71,14 +66,9 @@ namespace GlassStoreCore.BL.APIs
 
             }
 
-            _glassStoreContext.Users.Remove(user);
-            await _glassStoreContext.SaveChangesAsync();
-            await _glassStoreContext.DisposeAsync();
+            _usersService.DeleteUser(user);
 
             return Ok("User Has been deleted successfully");
         }
-
-        []
-
     }
 }

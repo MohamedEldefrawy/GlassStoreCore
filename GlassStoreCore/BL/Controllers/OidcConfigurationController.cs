@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace GlassStoreCore.Controllers
+namespace GlassStoreCore.BL.Controllers
 {
     public class OidcConfigurationController : Controller
     {
