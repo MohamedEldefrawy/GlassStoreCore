@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using GlassStoreCore.Data;
 using GlassStoreCore.Services;
+using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,7 @@ namespace GlassStoreCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IRolesService, RolesService>();
 
             services.AddDbContext<GlassStoreContext>(options =>
                 options.UseSqlServer(
