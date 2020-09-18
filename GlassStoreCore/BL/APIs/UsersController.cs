@@ -53,7 +53,6 @@ namespace GlassStoreCore.BL.APIs
 
             var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
 
-            _usersService.Dispose();
             return Ok(userDto);
         }
 
@@ -69,8 +68,6 @@ namespace GlassStoreCore.BL.APIs
             }
 
             _usersService.DeleteUser(user);
-            _usersService.Dispose();
-
             return Ok("User Has been deleted successfully");
         }
 
@@ -119,7 +116,6 @@ namespace GlassStoreCore.BL.APIs
 
             user = _mapper.Mapper.Map<UserDto, ApplicationUser>(userDto);
             _usersService.UpdateUser(user, id);
-            _usersService.Dispose();
             return Ok();
         }
     }

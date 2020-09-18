@@ -34,6 +34,7 @@ namespace GlassStoreCore.Services.UserService
         {
             _glassStoreContext.Users.Remove(user);
             await _glassStoreContext.SaveChangesAsync();
+
         }
 
         public async Task<IdentityResult> AddUser(ApplicationUser user, string pw)
