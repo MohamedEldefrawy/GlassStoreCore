@@ -56,10 +56,6 @@ namespace GlassStoreCore.BL.APIs
 
             var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
 
-            foreach (var role in userDto.Roles)
-            {
-                role.RoleName = _rolesService.GetRole(role.RoleId)?.Name;
-            }
 
             return Ok(userDto);
         }
