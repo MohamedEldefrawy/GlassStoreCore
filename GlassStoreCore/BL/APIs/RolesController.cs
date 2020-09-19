@@ -35,6 +35,18 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(rolesDto);
         }
+        [HttpGet("id")]
+        public ActionResult<IdentityRole> GetRole(string id)
+        {
+            var role = _rolesService.GetRole(id);
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var roleDto = _mapper.Mapper.Map<IdentityRole, RoleDto>(role);
+            return Ok(roleDto);
+        }
 
     }
 }
