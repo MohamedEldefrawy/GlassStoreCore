@@ -17,5 +17,7 @@ namespace GlassStoreCore.Services.RolesService
 
         public void UpdateRole(IdentityRole role, string id);
 
+        public void Dispose();
+
     }
 }

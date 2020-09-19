@@ -44,5 +44,10 @@ namespace GlassStoreCore.Services.RolesService
             _context.Entry(role).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+        public async void Dispose()
+        {
+            await _context.DisposeAsync();
+        }
     }
 }

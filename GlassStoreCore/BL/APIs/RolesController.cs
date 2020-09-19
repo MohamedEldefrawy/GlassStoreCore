@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.Services.RolesService;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,18 +31,33 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(rolesDto);
         }
+
         [HttpGet("id")]
         public ActionResult<IdentityRole> GetRole(string id)
         {
             var role = _rolesService.GetRole(id);
+
             if (role == null)
             {
                 return NotFound();
             }
-
             var roleDto = _mapper.Mapper.Map<IdentityRole, RoleDto>(role);
             return Ok(roleDto);
         }
 
+        [HttpPost]
+        public ActionResult<IdentityRole> CreateRole(RoleDto roleDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Please Enter a valid role data");
+            }
+
+            var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
+
+            _rolesService.AddRole(role);
+            _rolesService.Dispose();
+            return Ok();
+        }
     }
 }
