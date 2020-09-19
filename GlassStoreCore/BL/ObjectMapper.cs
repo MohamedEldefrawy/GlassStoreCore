@@ -23,6 +23,9 @@ namespace GlassStoreCore.BL
                                                      cfg.CreateMap<UserDto, ApplicationUser>();
                                                      cfg.CreateMap<IdentityUserRole<string>, UserRoleDto>();
                                                      cfg.CreateMap<UserRoleDto, IdentityUserRole<string>>();
+                                                     cfg.CreateMap<RoleDto, IdentityRole>();
+                                                     cfg.CreateMap<IdentityRole, RoleDto>();
+
                                                  });
 
             this.Mapper = config.CreateMapper();
