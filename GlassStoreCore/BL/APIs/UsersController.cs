@@ -2,6 +2,7 @@
 using System.Linq;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
+using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,12 @@ namespace GlassStoreCore.BL.APIs
     {
         private readonly ObjectMapper _mapper = new ObjectMapper();
         private readonly IUsersService _usersService;
+        private readonly IRolesService _rolesService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, IRolesService rolesService)
         {
             _usersService = usersService;
+            _rolesService = rolesService;
         }
 
         public ActionResult<ApplicationUser> GetUsers()
@@ -52,6 +55,11 @@ namespace GlassStoreCore.BL.APIs
             }
 
             var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
+
+            foreach (var role in userDto.Roles)
+            {
+                role.RoleName = _rolesService.GetRole(role.RoleId)?.Name;
+            }
 
             return Ok(userDto);
         }

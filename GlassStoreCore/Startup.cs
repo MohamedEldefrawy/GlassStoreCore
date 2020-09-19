@@ -31,6 +31,7 @@ namespace GlassStoreCore
         {
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IRolesService, RolesService>();
+            services.AddScoped<IUsersRolesService, UsersRolesService>();
 
             services.AddDbContext<GlassStoreContext>(options =>
                 options.UseSqlServer(
