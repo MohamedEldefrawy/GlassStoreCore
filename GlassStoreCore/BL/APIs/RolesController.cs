@@ -59,5 +59,41 @@ namespace GlassStoreCore.BL.APIs
             _rolesService.Dispose();
             return Ok();
         }
+
+        [HttpPut("id")]
+        public ActionResult<IdentityRole> UpdateRole(RoleDto roleDto, string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Please Enter valid role data");
+
+            }
+
+            var role = _rolesService.GetRole(id);
+            if (role == null)
+            {
+                return BadRequest("Please Select a valid role id");
+            }
+
+            role = _mapper.Mapper.Map(roleDto, role);
+
+            _rolesService.UpdateRole(role, id);
+            _rolesService.Dispose();
+            return Ok();
+        }
+
+        [HttpDelete("id")]
+        public ActionResult<IdentityRole> DeleteRole(string id)
+        {
+            var role = _rolesService.GetRole(id);
+            if (role == null)
+            {
+                return NotFound("please select a valid role");
+            }
+
+            _rolesService.DeleteRole(role);
+            _rolesService.Dispose();
+            return Ok();
+        }
     }
 }
