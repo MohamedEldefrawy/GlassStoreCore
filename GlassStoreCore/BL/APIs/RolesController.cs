@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GlassStoreCore.BL.APIs
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class RolesController : ControllerBase
     {
@@ -32,7 +32,7 @@ namespace GlassStoreCore.BL.APIs
             return Ok(rolesDto);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public ActionResult<IdentityRole> GetRole(string id)
         {
             var role = _rolesService.GetRole(id);
@@ -56,11 +56,10 @@ namespace GlassStoreCore.BL.APIs
             var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
 
             _rolesService.AddRole(role);
-            _rolesService.Dispose();
             return Ok();
         }
 
-        [HttpPut("id")]
+        [HttpPut("{id}")]
         public ActionResult<IdentityRole> UpdateRole(RoleDto roleDto, string id)
         {
             if (!ModelState.IsValid)
@@ -82,7 +81,7 @@ namespace GlassStoreCore.BL.APIs
             return Ok();
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public ActionResult<IdentityRole> DeleteRole(string id)
         {
             var role = _rolesService.GetRole(id);
