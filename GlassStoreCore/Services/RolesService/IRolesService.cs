@@ -13,7 +13,7 @@ namespace GlassStoreCore.Services.RolesService
 
         public void DeleteRole(IdentityRole role);
 
-        public Task<IdentityResult> AddRole(IdentityRole user);
+        public void AddRole(IdentityRole user);
 
         public void UpdateRole(IdentityRole role, string id);
 
