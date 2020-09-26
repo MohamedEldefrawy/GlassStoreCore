@@ -14,7 +14,7 @@ namespace GlassStoreCore.Services.RolesService
 
         public void AddUserRole(IdentityUserRole<string> user);
 
-        public void UpdateUserRole(IdentityUserRole<string> userRole);
+        public void UpdateUserRole(IdentityUserRole<string> userRole, string userId, string roleId);
 
         public void Dispose();
 

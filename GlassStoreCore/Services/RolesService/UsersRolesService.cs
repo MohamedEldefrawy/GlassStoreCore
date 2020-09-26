@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GlassStoreCore.Data;
@@ -38,7 +37,7 @@ namespace GlassStoreCore.Services.RolesService
             await _context.UserRoles.AddAsync(userRole);
         }
 
-        public async void UpdateUserRole(IdentityUserRole<string> userRole)
+        public async void UpdateUserRole(IdentityUserRole<string> userRole, string userId, string roleId)
         {
             _context.Entry(userRole).State = EntityState.Modified;
             await _context.SaveChangesAsync();

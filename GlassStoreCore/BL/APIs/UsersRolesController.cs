@@ -38,6 +38,19 @@ namespace GlassStoreCore.BL.APIs
             return Ok(userRolesDto);
         }
 
+        [HttpGet("({userId}:{roleId})")]
+        public ActionResult<IdentityUserRole<string>> GetUserRoles(string userId, string roleId)
+        {
+            var userRoles = _usersRolesService.GetUserRole(userId, roleId);
+
+            if (userRoles == null)
+            {
+                return NotFound("Please Enter a valid userId and roleId");
+            }
+
+            return Ok(userRoles);
+        }
+
         [HttpPost]
         public ActionResult<IdentityUserRole<string>> CreateUserRole(UserRoleDto userRoleDto)
         {
@@ -48,6 +61,41 @@ namespace GlassStoreCore.BL.APIs
 
             var userRole = _mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto);
             _usersRolesService.AddUserRole(userRole);
+            return Ok();
+        }
+
+        [HttpPut("({roleId}:{userId})")]
+        public ActionResult<IdentityUserRole<string>> UpdateUserRole(UserRoleDto userRoleDto, string roleId, string userId)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var selectedUserRole = _usersRolesService.GetUserRole(roleId, userId);
+
+            if (selectedUserRole == null)
+            {
+                return NotFound("Please Enter a valid userId and roleId");
+            }
+
+            var userRole = _mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto);
+            _usersRolesService.UpdateUserRole(userRole, userId, roleId);
+
+            return Ok();
+        }
+
+        public ActionResult<IdentityUserRole<string>> DeleteUserRole(string userId, string roleId)
+        {
+            var selectedUser = _usersRolesService.GetUserRole(userId, roleId);
+
+            if (selectedUser == null)
+            {
+                return NotFound("Please Enter a valid userId and roleId");
+            }
+            _usersRolesService.DeleteUserRole(selectedUser);
+
             return Ok();
         }
     }
