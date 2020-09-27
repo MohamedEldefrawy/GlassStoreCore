@@ -5,6 +5,7 @@ using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlassStoreCore.BL.APIs
@@ -64,8 +65,20 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest("User not found please use valid id");
             }
 
-            var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
+            var userRoles = _usersRolesService.GetUserRoles(id);
 
+
+            var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
+            userDto.Roles = new List<UserRoleDto>();
+            foreach (var role in userRoles)
+            {
+
+                userDto.Roles.Add(new UserRoleDto
+                {
+                    UserId = role.UserId,
+                    RoleId = role.RoleId
+                });
+            }
 
             return Ok(userDto);
         }
@@ -98,6 +111,11 @@ namespace GlassStoreCore.BL.APIs
 
             if (result.Result.Succeeded)
             {
+                foreach (var role in userDto.Roles)
+                {
+                    role.UserId = newUser.Id;
+                    _usersRolesService.AddUserRole(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role));
+                }
                 _usersService.Dispose();
                 return Ok();
             }

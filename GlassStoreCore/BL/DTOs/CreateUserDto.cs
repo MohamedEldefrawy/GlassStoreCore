@@ -18,7 +18,7 @@ namespace GlassStoreCore.BL.DTOs
         public string PhoneNumber { get; set; }
 
         [Required]
-        public string RoleId { get; set; }
+        public ICollection<UserRoleDto> Roles { get; set; }
 
     }
 }
