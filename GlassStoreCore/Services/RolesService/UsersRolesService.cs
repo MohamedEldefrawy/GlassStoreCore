@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,15 +11,17 @@ namespace GlassStoreCore.Services.RolesService
     public class UsersRolesService : IUsersRolesService
     {
         private readonly GlassStoreContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UsersRolesService(GlassStoreContext context)
+        public UsersRolesService(GlassStoreContext context, UserManager<ApplicationUser> userManger)
         {
             _context = context;
+            _userManager = userManger;
         }
 
-        public async Task<List<IdentityUserRole<string>>> GetAllUsersRoles()
+        public List<IdentityUserRole<string>> GetAllUsersRoles()
         {
-            return await _context.UserRoles.ToListAsync();
+            return _context.UserRoles.AsNoTracking().ToList();
         }
 
         public IdentityUserRole<string> GetUserRole(string userId, string roleId)
@@ -30,19 +33,15 @@ namespace GlassStoreCore.Services.RolesService
         public void DeleteUserRole(IdentityUserRole<string> userRole)
         {
             _context.UserRoles.Remove(userRole);
+            _context.SaveChanges();
+
         }
 
-        public async void AddUserRole(IdentityUserRole<string> userRole)
+        public void AddUserRole(IdentityUserRole<string> userRole)
         {
-            await _context.UserRoles.AddAsync(userRole);
+            _context.UserRoles.Add(userRole);
+            _context.SaveChanges();
         }
-
-        public async void UpdateUserRole(IdentityUserRole<string> userRole, string userId, string roleId)
-        {
-            _context.Entry(userRole).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
         public async void Dispose()
         {
             await _context.DisposeAsync();

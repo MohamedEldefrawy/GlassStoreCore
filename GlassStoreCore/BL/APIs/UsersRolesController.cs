@@ -27,7 +27,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet]
         public ActionResult<IdentityUserRole<string>> GetUsersRoles()
         {
-            var userRoles = _usersRolesService.GetAllUsersRoles().Result;
+            var userRoles = _usersRolesService.GetAllUsersRoles();
             if (userRoles == null)
             {
                 return NotFound();
@@ -38,17 +38,15 @@ namespace GlassStoreCore.BL.APIs
             return Ok(userRolesDto);
         }
 
-        [HttpGet("({userId}:{roleId})")]
-        public ActionResult<IdentityUserRole<string>> GetUserRoles(string userId, string roleId)
+        [HttpGet("{userId}")]
+        public ActionResult<IdentityUserRole<string>> GetUserRoles(string userId)
         {
-            var userRoles = _usersRolesService.GetUserRole(userId, roleId);
+            var selectedUserRoles = _usersRolesService.GetAllUsersRoles()
+                                                      .Where(u => u.UserId == userId).ToList();
 
-            if (userRoles == null)
-            {
-                return NotFound("Please Enter a valid userId and roleId");
-            }
+            var userRolesDto = selectedUserRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>);
 
-            return Ok(userRoles);
+            return Ok(userRolesDto);
         }
 
         [HttpPost]
@@ -64,28 +62,8 @@ namespace GlassStoreCore.BL.APIs
             return Ok();
         }
 
-        [HttpPut("({roleId}:{userId})")]
-        public ActionResult<IdentityUserRole<string>> UpdateUserRole(UserRoleDto userRoleDto, string roleId, string userId)
-        {
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            var selectedUserRole = _usersRolesService.GetUserRole(roleId, userId);
-
-            if (selectedUserRole == null)
-            {
-                return NotFound("Please Enter a valid userId and roleId");
-            }
-
-            var userRole = _mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto);
-            _usersRolesService.UpdateUserRole(userRole, userId, roleId);
-
-            return Ok();
-        }
-
+        [HttpDelete("{userId}/{roleId}")]
         public ActionResult<IdentityUserRole<string>> DeleteUserRole(string userId, string roleId)
         {
             var selectedUser = _usersRolesService.GetUserRole(userId, roleId);

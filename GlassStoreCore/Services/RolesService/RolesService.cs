@@ -19,12 +19,12 @@ namespace GlassStoreCore.Services.RolesService
 
         public async Task<List<IdentityRole>> GetAllRoles()
         {
-            return await this._context.Roles.ToListAsync<IdentityRole>();
+            return await _context.Roles.ToListAsync<IdentityRole>();
         }
 
         public IdentityRole GetRole(string id)
         {
-            return this._context.Roles.AsNoTracking().FirstOrDefault(r => r.Id == id);
+            return _context.Roles.AsNoTracking().FirstOrDefault(r => r.Id == id);
         }
 
         public async void DeleteRole(IdentityRole role)
@@ -33,10 +33,10 @@ namespace GlassStoreCore.Services.RolesService
             await _context.SaveChangesAsync();
         }
 
-        public async void AddRole(IdentityRole role)
+        public void AddRole(IdentityRole role)
         {
-            await _context.Roles.AddAsync(role);
-            await _context.SaveChangesAsync();
+            _context.Roles.Add(role);
+            _context.SaveChanges();
         }
 
         public async void UpdateRole(IdentityRole role, string id)

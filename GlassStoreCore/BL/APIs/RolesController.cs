@@ -56,6 +56,7 @@ namespace GlassStoreCore.BL.APIs
             var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
 
             _rolesService.AddRole(role);
+            _rolesService.Dispose();
             return Ok();
         }
 
