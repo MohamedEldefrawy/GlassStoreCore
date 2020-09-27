@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.Services.RolesService;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,15 +30,14 @@ namespace GlassStoreCore.BL.APIs
             }
             var userRolesDto = userRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>);
 
-
             return Ok(userRolesDto);
         }
 
         [HttpGet("{userId}")]
         public ActionResult<IdentityUserRole<string>> GetUserRoles(string userId)
         {
-            var selectedUserRoles = _usersRolesService.GetAllUsersRoles()
-                                                      .Where(u => u.UserId == userId).ToList();
+            var selectedUserRoles = _usersRolesService.GetUserRoles(userId);
+
 
             var userRolesDto = selectedUserRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>);
 
@@ -66,14 +61,12 @@ namespace GlassStoreCore.BL.APIs
         [HttpDelete("{userId}/{roleId}")]
         public ActionResult<IdentityUserRole<string>> DeleteUserRole(string userId, string roleId)
         {
-            var selectedUser = _usersRolesService.GetUserRole(userId, roleId);
-
+            var selectedUser = _usersRolesService.GetUserRoles(userId);
             if (selectedUser == null)
             {
                 return NotFound("Please Enter a valid userId and roleId");
             }
-            _usersRolesService.DeleteUserRole(selectedUser);
-
+            _usersRolesService.DeleteUserRole(selectedUser.SingleOrDefault(u => u.RoleId == roleId));
             return Ok();
         }
     }

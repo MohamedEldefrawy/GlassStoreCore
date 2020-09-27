@@ -8,7 +8,7 @@ namespace GlassStoreCore.Services.RolesService
     {
         public List<IdentityUserRole<string>> GetAllUsersRoles();
 
-        public IdentityUserRole<string> GetUserRole(string userId, string roleId);
+        public List<IdentityUserRole<string>> GetUserRoles(string userId);
 
         public void DeleteUserRole(IdentityUserRole<string> userRole);
 

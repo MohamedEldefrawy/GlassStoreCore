@@ -24,10 +24,9 @@ namespace GlassStoreCore.Services.RolesService
             return _context.UserRoles.AsNoTracking().ToList();
         }
 
-        public IdentityUserRole<string> GetUserRole(string userId, string roleId)
+        public List<IdentityUserRole<string>> GetUserRoles(string userId)
         {
-            return _context.UserRoles.AsNoTracking()
-                                   .FirstOrDefault(u => u.UserId == userId && u.RoleId == roleId);
+            return _context.UserRoles.Where(u => u.UserId == userId).ToList();
         }
 
         public void DeleteUserRole(IdentityUserRole<string> userRole)
