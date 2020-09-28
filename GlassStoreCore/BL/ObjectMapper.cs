@@ -29,6 +29,8 @@ namespace GlassStoreCore.BL
                                                      cfg.CreateMap<IdentityUserRole<string>, UserRoleDto>();
                                                      cfg.CreateMap<UpdateRoleDto, IdentityRole>();
                                                      cfg.CreateMap<IdentityRole, UpdateRoleDto>();
+                                                     cfg.CreateMap<IdentityUserRole<string>, UpdateUserRole>();
+                                                     cfg.CreateMap<UpdateUserRole, IdentityUserRole<string>>();
 
                                                  });
 

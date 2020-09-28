@@ -106,7 +106,7 @@ namespace GlassStoreCore.BL.APIs
             foreach (var role in userDto.Roles)
             {
                 role.UserId = result.Result.Id;
-                _usersRolesService.AddUserRole(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role));
+                _usersRolesService.AddUserRole(role);
             }
             return Ok();
 

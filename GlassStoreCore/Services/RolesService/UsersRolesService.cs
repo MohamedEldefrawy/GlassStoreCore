@@ -1,42 +1,47 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GlassStoreCore.BL.Models;
+using GlassStoreCore.BL;
+using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace GlassStoreCore.Services.RolesService
 {
     public class UsersRolesService : IUsersRolesService
     {
         private readonly GlassStoreContext _context;
+        private readonly ObjectMapper _mapper;
 
-        public UsersRolesService(GlassStoreContext context)
+        public UsersRolesService(GlassStoreContext context, ObjectMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<List<IdentityUserRole<string>>> GetAllUsersRoles()
+        public async Task<List<UserRoleDto>> GetAllUsersRoles()
         {
-            return await _context.UserRoles.AsNoTracking().ToListAsync();
+            var userRoles = await _context.UserRoles.AsNoTracking().ToListAsync();
+            return userRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>).ToList();
         }
 
-        public async Task<List<IdentityUserRole<string>>> GetUserRoles(string userId)
+        public async Task<List<UserRoleDto>> GetUserRoles(string userId)
         {
-            return await _context.UserRoles.Where(u => u.UserId == userId).ToListAsync();
+            var userRoles = await _context.UserRoles.Where(u => u.UserId == userId).ToListAsync();
+            return userRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>).ToList();
         }
 
-        public async Task<int> DeleteUserRole(IdentityUserRole<string> userRole)
+        public async Task<int> DeleteUserRole(string userId, string roleId)
         {
+            var userRole = await _context.UserRoles.FindAsync(userId, roleId);
             _context.UserRoles.Remove(userRole);
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<int> AddUserRole(IdentityUserRole<string> userRole)
+        public async Task<int> AddUserRole(UserRoleDto userRole)
         {
-            await _context.UserRoles.AddAsync(userRole);
+            await _context.UserRoles.AddAsync(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRole));
             return await _context.SaveChangesAsync();
         }
     }

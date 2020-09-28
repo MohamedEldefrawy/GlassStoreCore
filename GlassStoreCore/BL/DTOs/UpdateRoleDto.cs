@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace GlassStoreCore.BL.DTOs
+﻿namespace GlassStoreCore.BL.DTOs
 {
     public class UpdateRoleDto
     {
