@@ -14,7 +14,6 @@ namespace GlassStoreCore.BL.APIs
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly ObjectMapper _mapper = new ObjectMapper();
         private readonly IUsersService _usersService;
         private readonly IUsersRolesService _usersRolesService;
 
@@ -120,15 +119,27 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest();
             }
             var result = _usersService.UpdateUser(userDto, id);
+            var updateUserRoles = userDto.Roles;
+
+            foreach (var role in updateUserRoles)
+            {
+                _usersRolesService.AddUserRole(role);
+            }
+
+            var userRole = _usersRolesService.GetUserRoles(id).Result;
+
+            foreach (var role in userRole)
+            {
+                _usersRolesService.DeleteUserRole(role.UserId, role.RoleId);
+            }
 
             if (result.Result == 0)
             {
                 return BadRequest("Something wrong");
-
-
             }
 
             return Ok();
+
         }
     }
 }
