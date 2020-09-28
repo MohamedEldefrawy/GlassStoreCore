@@ -16,7 +16,7 @@ namespace GlassStoreCore.Services.UserService
 
         public Task<ApplicationUser> AddUser(CreateUserDto user, string pw);
 
-        public Task<IdentityResult> UpdateUser(UserDto user, string id);
+        public Task<int> UpdateUser(UserDto user, string id);
 
     }
 }

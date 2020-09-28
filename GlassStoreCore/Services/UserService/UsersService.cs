@@ -14,13 +14,15 @@ namespace GlassStoreCore.Services.UserService
     public class UsersService : IUsersService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly GlassStoreContext _context;
         private readonly ObjectMapper _mapper;
 
 
-        public UsersService(UserManager<ApplicationUser> userManager, ObjectMapper mapper)
+        public UsersService(UserManager<ApplicationUser> userManager, ObjectMapper mapper, GlassStoreContext context)
         {
             _userManager = userManager;
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<List<UserDto>> GetAllUsers()
@@ -49,13 +51,19 @@ namespace GlassStoreCore.Services.UserService
             return newUser;
         }
 
-        public async Task<IdentityResult> UpdateUser(UserDto user, string id)
+        public async Task<int> UpdateUser(UserDto user, string id)
         {
-            var selectedUser = _mapper.Mapper.Map<UserDto, ApplicationUser>(user);
-            selectedUser.Id = id;
-            selectedUser.NormalizedEmail = selectedUser.Email.ToUpper();
-            selectedUser.NormalizedUserName = selectedUser.UserName.ToUpper();
-            return await _userManager.UpdateAsync(selectedUser);
+
+            var selectedUser = _context.Users.FindAsync(id).Result;
+            selectedUser.UserName = user.UserName;
+            selectedUser.Email = user.Email;
+            selectedUser.NormalizedEmail = user.Email.ToUpper();
+            selectedUser.NormalizedUserName = user.UserName.ToUpper();
+            selectedUser.PhoneNumber = user.PhoneNumber;
+
+            _context.Entry(selectedUser).State = EntityState.Modified;
+            return await _context.SaveChangesAsync();
+
         }
     }
 }

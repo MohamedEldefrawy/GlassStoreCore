@@ -121,13 +121,14 @@ namespace GlassStoreCore.BL.APIs
             }
             var result = _usersService.UpdateUser(userDto, id);
 
-            if (result.Result.Succeeded)
+            if (result.Result == 0)
             {
-                return Ok();
+                return BadRequest("Something wrong");
+
 
             }
 
-            return BadRequest("Something wrong");
+            return Ok();
         }
     }
 }
