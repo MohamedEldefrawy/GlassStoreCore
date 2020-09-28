@@ -16,16 +16,12 @@ namespace GlassStoreCore.BL.APIs
     {
         private readonly ObjectMapper _mapper = new ObjectMapper();
         private readonly IUsersService _usersService;
-        private readonly IRolesService _rolesService;
         private readonly IUsersRolesService _usersRolesService;
-        private readonly GlassStoreContext _glassStoreContext;
 
-        public UsersController(IUsersService usersService, IRolesService rolesService, IUsersRolesService usersRolesService, GlassStoreContext glassStoreContext)
+        public UsersController(IUsersService usersService, IUsersRolesService usersRolesService)
         {
             _usersService = usersService;
-            _rolesService = rolesService;
             _usersRolesService = usersRolesService;
-            _glassStoreContext = glassStoreContext;
         }
 
         public ActionResult<ApplicationUser> GetUsers()
@@ -37,9 +33,7 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest();
             }
 
-            var usersDtos = users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>).ToList();
-
-            foreach (var user in usersDtos)
+            foreach (var user in users)
             {
                 var userRoles = _usersRolesService.GetUserRoles(user.Id).Result;
                 user.Roles = new List<UserRoleDto>();
@@ -53,8 +47,7 @@ namespace GlassStoreCore.BL.APIs
                     });
                 }
             }
-
-            return Ok(usersDtos);
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
@@ -70,34 +63,25 @@ namespace GlassStoreCore.BL.APIs
             var userRoles = _usersRolesService.GetUserRoles(id).Result;
 
 
-            var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
-            userDto.Roles = new List<UserRoleDto>();
+            user.Roles = new List<UserRoleDto>();
             foreach (var role in userRoles)
             {
 
-                userDto.Roles.Add(new UserRoleDto
+                user.Roles.Add(new UserRoleDto
                 {
                     UserId = role.UserId,
                     RoleId = role.RoleId
                 });
             }
 
-            return Ok(userDto);
+            return Ok(user);
         }
 
         [HttpDelete("{id}")]
         public ActionResult<ApplicationUser> DeleteUser(string id)
         {
-            var user = _usersService.GetUser(id).Result;
-
-            if (user == null)
-            {
-                return BadRequest("Please Select a Valid user id");
-
-            }
-
-            var result = _usersService.DeleteUser(user);
-            if (result.Result.Succeeded)
+            var result = _usersService.DeleteUser(id).Result;
+            if (result.Succeeded)
             {
                 return Ok("User Has been deleted successfully");
 
@@ -114,24 +98,18 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest();
             }
 
-            var newUser = _mapper.Mapper.Map<CreateUserDto, ApplicationUser>(userDto);
-            var result = _usersService.AddUser(newUser, userDto.Password);
+            var result = _usersService.AddUser(userDto, userDto.Password);
 
-            if (result.Result.Succeeded)
-            {
-                foreach (var role in userDto.Roles)
-                {
-                    role.UserId = newUser.Id;
-                    _usersRolesService.AddUserRole(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role));
-                }
-                return Ok();
-            }
+            if (result.Result == null)
+                return BadRequest("Please Enter valid data");
 
-            foreach (var error in result.Result.Errors)
+            foreach (var role in userDto.Roles)
             {
-                ModelState.AddModelError("", error.Description);
+                role.UserId = result.Result.Id;
+                _usersRolesService.AddUserRole(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role));
             }
-            return BadRequest("Please Enter valid data");
+            return Ok();
+
         }
 
         [HttpPut("{id}")]

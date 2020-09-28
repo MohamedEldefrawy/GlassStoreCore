@@ -8,13 +8,13 @@ namespace GlassStoreCore.Services.UserService
 {
     public interface IUsersService
     {
-        public Task<List<ApplicationUser>> GetAllUsers();
+        public Task<List<UserDto>> GetAllUsers();
 
-        public Task<ApplicationUser> GetUser(string id);
+        public Task<UserDto> GetUser(string id);
 
-        public Task<IdentityResult> DeleteUser(ApplicationUser user);
+        public Task<IdentityResult> DeleteUser(string id);
 
-        public Task<IdentityResult> AddUser(ApplicationUser user, string pw);
+        public Task<ApplicationUser> AddUser(CreateUserDto user, string pw);
 
         public Task<IdentityResult> UpdateUser(UserDto user, string id);
 

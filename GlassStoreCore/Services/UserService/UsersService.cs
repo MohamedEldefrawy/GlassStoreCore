@@ -23,25 +23,30 @@ namespace GlassStoreCore.Services.UserService
             _mapper = mapper;
         }
 
-        public async Task<List<ApplicationUser>> GetAllUsers()
+        public async Task<List<UserDto>> GetAllUsers()
         {
-            return await _userManager.Users.AsNoTracking().ToListAsync<ApplicationUser>();
+            var users = await _userManager.Users.AsNoTracking().ToListAsync<ApplicationUser>();
+            return users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>).ToList();
         }
 
-        public async Task<ApplicationUser> GetUser(string id)
+        public async Task<UserDto> GetUser(string id)
         {
-            return await _userManager.Users.AsNoTracking().
-                                                FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _userManager.Users.AsNoTracking().
+                                           FirstOrDefaultAsync(u => u.Id == id);
+            return _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
         }
 
-        public async Task<IdentityResult> DeleteUser(ApplicationUser user)
+        public async Task<IdentityResult> DeleteUser(string id)
         {
-            return await _userManager.DeleteAsync(user);
+            var selectedUser = _userManager.FindByIdAsync(id).Result;
+            return await _userManager.DeleteAsync(selectedUser);
         }
 
-        public async Task<IdentityResult> AddUser(ApplicationUser user, string pw)
+        public async Task<ApplicationUser> AddUser(CreateUserDto user, string pw)
         {
-            return await _userManager.CreateAsync(user, pw);
+            var newUser = _mapper.Mapper.Map<CreateUserDto, ApplicationUser>(user);
+            await _userManager.CreateAsync(newUser, pw);
+            return newUser;
         }
 
         public async Task<IdentityResult> UpdateUser(UserDto user, string id)
