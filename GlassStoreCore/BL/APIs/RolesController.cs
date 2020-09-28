@@ -10,13 +10,11 @@ namespace GlassStoreCore.BL.APIs
     [ApiController]
     public class RolesController : ControllerBase
     {
-        private readonly ObjectMapper _mapper;
         private readonly IRolesService _rolesService;
 
-        public RolesController(IRolesService rolesService, ObjectMapper mapper)
+        public RolesController(IRolesService rolesService)
         {
             _rolesService = rolesService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -28,9 +26,7 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound();
             }
 
-            var rolesDto = roles.Select(_mapper.Mapper.Map<IdentityRole, RoleDto>).ToList();
-
-            return Ok(rolesDto);
+            return Ok(roles);
         }
 
         [HttpGet("{id}")]
@@ -42,8 +38,7 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound();
             }
-            var roleDto = _mapper.Mapper.Map<IdentityRole, RoleDto>(role);
-            return Ok(roleDto);
+            return Ok(role);
         }
 
         [HttpPost]
@@ -54,9 +49,8 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest("Please Enter a valid role data");
             }
 
-            var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
 
-            var result = _rolesService.AddRole(role).Result;
+            var result = _rolesService.AddRole(roleDto).Result;
             if (result == 0)
             {
                 return BadRequest("Something wrong");
@@ -66,7 +60,7 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpPut("{id}")]
-        public ActionResult<IdentityRole> UpdateRole(RoleDto roleDto, string id)
+        public ActionResult<IdentityRole> UpdateRole(UpdateRoleDto roleDto, string id)
         {
             if (!ModelState.IsValid)
             {
@@ -74,15 +68,7 @@ namespace GlassStoreCore.BL.APIs
 
             }
 
-            var role = _rolesService.GetRole(id).Result;
-            if (role == null)
-            {
-                return BadRequest("Please Select a valid role id");
-            }
-
-            role = _mapper.Mapper.Map(roleDto, role);
-
-            var result = _rolesService.UpdateRole(role, id).Result;
+            var result = _rolesService.UpdateRole(roleDto, id).Result;
             if (result == 0)
             {
                 return BadRequest("Something wrong");
@@ -99,7 +85,7 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound("please select a valid role");
             }
 
-            var result = _rolesService.DeleteRole(role).Result;
+            var result = _rolesService.DeleteRole(id).Result;
             if (result == 0)
             {
                 return BadRequest("Something wrong");
