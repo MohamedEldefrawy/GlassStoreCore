@@ -11,19 +11,17 @@ namespace GlassStoreCore.BL.APIs
     public class UsersRolesController : ControllerBase
     {
         private readonly IUsersRolesService _usersRolesService;
-        private readonly IRolesService _rolesService;
         private readonly ObjectMapper _mapper = new ObjectMapper();
 
-        public UsersRolesController(IUsersRolesService usersRolesService, IRolesService rolesService)
+        public UsersRolesController(IUsersRolesService usersRolesService)
         {
             _usersRolesService = usersRolesService;
-            _rolesService = rolesService;
         }
 
         [HttpGet]
         public ActionResult<IdentityUserRole<string>> GetUsersRoles()
         {
-            var userRoles = _usersRolesService.GetAllUsersRoles();
+            var userRoles = _usersRolesService.GetAllUsersRoles().Result;
             if (userRoles == null)
             {
                 return NotFound();
@@ -36,9 +34,12 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet("{userId}")]
         public ActionResult<IdentityUserRole<string>> GetUserRoles(string userId)
         {
-            var selectedUserRoles = _usersRolesService.GetUserRoles(userId);
+            var selectedUserRoles = _usersRolesService.GetUserRoles(userId).Result;
 
-
+            if (selectedUserRoles == null)
+            {
+                return NotFound("Please enter a valid id");
+            }
             var userRolesDto = selectedUserRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>);
 
             return Ok(userRolesDto);
@@ -53,7 +54,13 @@ namespace GlassStoreCore.BL.APIs
             }
 
             var userRole = _mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto);
-            _usersRolesService.AddUserRole(userRole);
+            var result = _usersRolesService.AddUserRole(userRole).Result;
+
+            if (result == 0)
+            {
+                return BadRequest("something wrong");
+            }
+
             return Ok();
         }
 
@@ -61,12 +68,16 @@ namespace GlassStoreCore.BL.APIs
         [HttpDelete("{userId}/{roleId}")]
         public ActionResult<IdentityUserRole<string>> DeleteUserRole(string userId, string roleId)
         {
-            var selectedUser = _usersRolesService.GetUserRoles(userId);
+            var selectedUser = _usersRolesService.GetUserRoles(userId).Result;
             if (selectedUser == null)
             {
                 return NotFound("Please Enter a valid userId and roleId");
             }
-            _usersRolesService.DeleteUserRole(selectedUser.SingleOrDefault(u => u.RoleId == roleId));
+            var result = _usersRolesService.DeleteUserRole(selectedUser.SingleOrDefault(u => u.RoleId == roleId)).Result;
+            if (result == 0)
+            {
+                return BadRequest("something wrong");
+            }
             return Ok();
         }
     }

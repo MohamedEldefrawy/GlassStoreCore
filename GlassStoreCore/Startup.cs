@@ -1,3 +1,4 @@
+using GlassStoreCore.BL;
 using GlassStoreCore.BL.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using GlassStoreCore.Data;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,6 +33,7 @@ namespace GlassStoreCore
         {
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IRolesService, RolesService>();
+            services.AddScoped<ObjectMapper>();
             services.AddScoped<IUsersRolesService, UsersRolesService>();
 
             services.AddDbContext<GlassStoreContext>(options =>
@@ -57,7 +60,7 @@ namespace GlassStoreCore
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager)
         {
             if (env.IsDevelopment())
             {

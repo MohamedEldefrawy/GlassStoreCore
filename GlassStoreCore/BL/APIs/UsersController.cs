@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
+using GlassStoreCore.Data;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
 using Microsoft.AspNetCore.Identity;
@@ -18,12 +18,14 @@ namespace GlassStoreCore.BL.APIs
         private readonly IUsersService _usersService;
         private readonly IRolesService _rolesService;
         private readonly IUsersRolesService _usersRolesService;
+        private readonly GlassStoreContext _glassStoreContext;
 
-        public UsersController(IUsersService usersService, IRolesService rolesService, IUsersRolesService usersRolesService)
+        public UsersController(IUsersService usersService, IRolesService rolesService, IUsersRolesService usersRolesService, GlassStoreContext glassStoreContext)
         {
             _usersService = usersService;
             _rolesService = rolesService;
             _usersRolesService = usersRolesService;
+            _glassStoreContext = glassStoreContext;
         }
 
         public ActionResult<ApplicationUser> GetUsers()
@@ -39,7 +41,7 @@ namespace GlassStoreCore.BL.APIs
 
             foreach (var user in usersDtos)
             {
-                var userRoles = _usersRolesService.GetUserRoles(user.Id);
+                var userRoles = _usersRolesService.GetUserRoles(user.Id).Result;
                 user.Roles = new List<UserRoleDto>();
 
                 foreach (var role in userRoles)
@@ -58,14 +60,14 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet("{id}")]
         public ActionResult<ApplicationUser> GetUser(string id)
         {
-            var user = _usersService.GetUser(id);
+            var user = _usersService.GetUser(id).Result;
 
             if (user == null)
             {
                 return BadRequest("User not found please use valid id");
             }
 
-            var userRoles = _usersRolesService.GetUserRoles(id);
+            var userRoles = _usersRolesService.GetUserRoles(id).Result;
 
 
             var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
@@ -86,7 +88,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpDelete("{id}")]
         public ActionResult<ApplicationUser> DeleteUser(string id)
         {
-            var user = _usersService.GetUser(id);
+            var user = _usersService.GetUser(id).Result;
 
             if (user == null)
             {
@@ -94,8 +96,14 @@ namespace GlassStoreCore.BL.APIs
 
             }
 
-            _usersService.DeleteUser(user);
-            return Ok("User Has been deleted successfully");
+            var result = _usersService.DeleteUser(user);
+            if (result.Result.Succeeded)
+            {
+                return Ok("User Has been deleted successfully");
+
+            }
+
+            return BadRequest("Something wrong");
         }
 
         [HttpPost]
@@ -116,19 +124,14 @@ namespace GlassStoreCore.BL.APIs
                     role.UserId = newUser.Id;
                     _usersRolesService.AddUserRole(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role));
                 }
-                _usersService.Dispose();
                 return Ok();
             }
 
-            else
+            foreach (var error in result.Result.Errors)
             {
-                foreach (var error in result.Result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-                _usersService.Dispose();
-                return BadRequest("Please Enter valid data");
+                ModelState.AddModelError("", error.Description);
             }
+            return BadRequest("Please Enter valid data");
         }
 
         [HttpPut("{id}")]
@@ -138,17 +141,15 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest();
             }
+            var result = _usersService.UpdateUser(userDto, id);
 
-            var user = _usersService.GetUser(id);
-
-            if (user == null)
+            if (result.Result.Succeeded)
             {
-                return NotFound("Please Enter a valid user id");
+                return Ok();
+
             }
 
-            user = _mapper.Mapper.Map<UserDto, ApplicationUser>(userDto);
-            _usersService.UpdateUser(user, id);
-            return Ok();
+            return BadRequest("Something wrong");
         }
     }
 }

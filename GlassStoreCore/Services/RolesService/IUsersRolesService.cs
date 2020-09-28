@@ -6,15 +6,12 @@ namespace GlassStoreCore.Services.RolesService
 {
     public interface IUsersRolesService
     {
-        public List<IdentityUserRole<string>> GetAllUsersRoles();
+        public Task<List<IdentityUserRole<string>>> GetAllUsersRoles();
 
-        public List<IdentityUserRole<string>> GetUserRoles(string userId);
+        public Task<List<IdentityUserRole<string>>> GetUserRoles(string userId);
 
-        public void DeleteUserRole(IdentityUserRole<string> userRole);
+        public Task<int> DeleteUserRole(IdentityUserRole<string> userRole);
 
-        public void AddUserRole(IdentityUserRole<string> user);
-
-        public void Dispose();
-
+        public Task<int> AddUserRole(IdentityUserRole<string> user);
     }
 }

@@ -10,12 +10,13 @@ namespace GlassStoreCore.BL.APIs
     [ApiController]
     public class RolesController : ControllerBase
     {
-        private readonly ObjectMapper _mapper = new ObjectMapper();
+        private readonly ObjectMapper _mapper;
         private readonly IRolesService _rolesService;
 
-        public RolesController(IRolesService rolesService)
+        public RolesController(IRolesService rolesService, ObjectMapper mapper)
         {
-            this._rolesService = rolesService;
+            _rolesService = rolesService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -35,7 +36,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet("{id}")]
         public ActionResult<IdentityRole> GetRole(string id)
         {
-            var role = _rolesService.GetRole(id);
+            var role = _rolesService.GetRole(id).Result;
 
             if (role == null)
             {
@@ -55,8 +56,12 @@ namespace GlassStoreCore.BL.APIs
 
             var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
 
-            _rolesService.AddRole(role);
-            _rolesService.Dispose();
+            var result = _rolesService.AddRole(role).Result;
+            if (result == 0)
+            {
+                return BadRequest("Something wrong");
+            }
+
             return Ok();
         }
 
@@ -69,7 +74,7 @@ namespace GlassStoreCore.BL.APIs
 
             }
 
-            var role = _rolesService.GetRole(id);
+            var role = _rolesService.GetRole(id).Result;
             if (role == null)
             {
                 return BadRequest("Please Select a valid role id");
@@ -77,22 +82,28 @@ namespace GlassStoreCore.BL.APIs
 
             role = _mapper.Mapper.Map(roleDto, role);
 
-            _rolesService.UpdateRole(role, id);
-            _rolesService.Dispose();
+            var result = _rolesService.UpdateRole(role, id).Result;
+            if (result == 0)
+            {
+                return BadRequest("Something wrong");
+            }
             return Ok();
         }
 
         [HttpDelete("{id}")]
         public ActionResult<IdentityRole> DeleteRole(string id)
         {
-            var role = _rolesService.GetRole(id);
+            var role = _rolesService.GetRole(id).Result;
             if (role == null)
             {
                 return NotFound("please select a valid role");
             }
 
-            _rolesService.DeleteRole(role);
-            _rolesService.Dispose();
+            var result = _rolesService.DeleteRole(role).Result;
+            if (result == 0)
+            {
+                return BadRequest("Something wrong");
+            }
             return Ok();
         }
     }

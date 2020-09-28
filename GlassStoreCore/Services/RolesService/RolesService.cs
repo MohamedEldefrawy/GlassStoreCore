@@ -22,32 +22,27 @@ namespace GlassStoreCore.Services.RolesService
             return await _context.Roles.ToListAsync<IdentityRole>();
         }
 
-        public IdentityRole GetRole(string id)
+        public async Task<IdentityRole> GetRole(string id)
         {
-            return _context.Roles.AsNoTracking().FirstOrDefault(r => r.Id == id);
+            return await _context.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async void DeleteRole(IdentityRole role)
+        public async Task<int> DeleteRole(IdentityRole role)
         {
             _context.Roles.Remove(role);
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
-        public void AddRole(IdentityRole role)
+        public async Task<int> AddRole(IdentityRole role)
         {
-            _context.Roles.Add(role);
-            _context.SaveChanges();
+            await _context.Roles.AddAsync(role);
+            return await _context.SaveChangesAsync();
         }
 
-        public async void UpdateRole(IdentityRole role, string id)
+        public async Task<int> UpdateRole(IdentityRole role, string id)
         {
             _context.Entry(role).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
-        public async void Dispose()
-        {
-            await _context.DisposeAsync();
+            return await _context.SaveChangesAsync();
         }
     }
 }
