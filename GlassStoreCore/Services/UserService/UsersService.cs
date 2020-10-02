@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using GlassStoreCore.BL;
+using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data;
@@ -25,10 +26,14 @@ namespace GlassStoreCore.Services.UserService
             _context = context;
         }
 
-        public async Task<List<UserDto>> GetAllUsers()
+        public async Task<(List<UserDto>, int)> GetAllUsers(int pageNumber, int pageSize)
         {
-            var users = await _userManager.Users.AsNoTracking().ToListAsync<ApplicationUser>();
-            return users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>).ToList();
+            var validFilter = new PaginationFilter(pageNumber, pageSize);
+            var users = await _userManager.Users.AsNoTracking()
+                                          .Skip((validFilter.PageNumber - 1) * validFilter.PageSize).Take(validFilter.PageSize)
+                                          .ToListAsync();
+            var totalRecords = await _userManager.Users.CountAsync();
+            return (users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>).ToList(), totalRecords);
         }
 
         public async Task<UserDto> GetUser(string id)

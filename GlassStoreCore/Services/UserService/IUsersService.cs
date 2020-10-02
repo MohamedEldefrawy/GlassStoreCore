@@ -8,7 +8,7 @@ namespace GlassStoreCore.Services.UserService
 {
     public interface IUsersService
     {
-        public Task<List<UserDto>> GetAllUsers();
+        public Task<(List<UserDto>, int)> GetAllUsers(int pageNumber, int pageSize);
 
         public Task<UserDto> GetUser(string id);
 

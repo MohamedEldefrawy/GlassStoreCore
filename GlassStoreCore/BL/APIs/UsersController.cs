@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data;
+using GlassStoreCore.Data.Response;
+using GlassStoreCore.Helpers;
 using GlassStoreCore.Services.RolesService;
+using GlassStoreCore.Services.UriService;
 using GlassStoreCore.Services.UserService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,20 +20,23 @@ namespace GlassStoreCore.BL.APIs
     {
         private readonly IUsersService _usersService;
         private readonly IUsersRolesService _usersRolesService;
+        private readonly IUriService _uriService;
 
-        public UsersController(IUsersService usersService, IUsersRolesService usersRolesService)
+        public UsersController(IUsersService usersService, IUsersRolesService usersRolesService, IUriService uriService)
         {
             _usersService = usersService;
             _usersRolesService = usersRolesService;
+            _uriService = uriService;
         }
 
-        public ActionResult<ApplicationUser> GetUsers()
+        public ActionResult<ApplicationUser> GetUsers([FromQuery] PaginationFilter filter)
         {
-            var users = _usersService.GetAllUsers().Result;
+            var route = Request.Path.Value;
+            var (users, totalRecords) = _usersService.GetAllUsers(filter.PageNumber, filter.PageSize).Result;
 
             if (users == null)
             {
-                return BadRequest();
+                return BadRequest(new Response<List<UserDto>>(users));
             }
 
             foreach (var user in users)
@@ -46,7 +53,9 @@ namespace GlassStoreCore.BL.APIs
                     });
                 }
             }
-            return Ok(users);
+
+            var pageResponse = PaginationHelper.CreatePagedResponse(users, filter, totalRecords, _uriService, route);
+            return Ok(pageResponse);
         }
 
         [HttpGet("{id}")]

@@ -4,15 +4,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using GlassStoreCore.Data;
-using GlassStoreCore.Services;
 using GlassStoreCore.Services.RolesService;
+using GlassStoreCore.Services.UriService;
 using GlassStoreCore.Services.UserService;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,12 +31,22 @@ namespace GlassStoreCore
         {
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IRolesService, RolesService>();
+            //services.AddScoped<IUriService, UriService>();
             services.AddScoped<ObjectMapper>();
             services.AddScoped<IUsersRolesService, UsersRolesService>();
 
             services.AddDbContext<GlassStoreContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MyConn")));
+
+            services.AddSingleton<IUriService>(o =>
+                                               {
+                                                   var accessor = o.GetRequiredService<IHttpContextAccessor>();
+                                                   var request = accessor.HttpContext.Request;
+                                                   var uri = string.Concat(request.Scheme, "://",
+                                                                           request.Host.ToUriComponent());
+                                                   return new UriService(uri);
+                                               });
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<GlassStoreContext>();
