@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using GlassStoreCore.Data;
+using GlassStoreCore.Helpers;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UriService;
 using GlassStoreCore.Services.UserService;
@@ -29,16 +30,11 @@ namespace GlassStoreCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped<IRolesService, RolesService>();
-            //services.AddScoped<IUriService, UriService>();
+            services.AddRepository();
             services.AddScoped<ObjectMapper>();
-            services.AddScoped<IUsersRolesService, UsersRolesService>();
-
             services.AddDbContext<GlassStoreContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("MyConn")));
-
+                                                         options.UseSqlServer(
+                                                                              Configuration.GetConnectionString("MyConn")));
             services.AddSingleton<IUriService>(o =>
                                                {
                                                    var accessor = o.GetRequiredService<IHttpContextAccessor>();

@@ -6,17 +6,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GlassStoreCore.Services.UserService
 {
-    public interface IUsersService
+    public interface IUsersService : IService<ApplicationUser>
     {
-        public Task<(List<UserDto>, int)> GetAllUsers(int pageNumber, int pageSize);
-
-        public Task<UserDto> GetUser(string id);
-
-        public Task<IdentityResult> DeleteUser(string id);
-
-        public Task<ApplicationUser> AddUser(CreateUserDto user, string pw);
-
-        public Task<int> UpdateUser(UserDto user, string id);
-
+        public Task<ApplicationUser> CreateUser(CreateUserDto user);
     }
 }

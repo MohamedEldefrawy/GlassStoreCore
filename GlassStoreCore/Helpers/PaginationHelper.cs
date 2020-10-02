@@ -12,7 +12,7 @@ namespace GlassStoreCore.Helpers
             PaginationFilter paginationFilter, int totalRecords, IUriService uriService, string route)
         {
             var response = new PagedResponse<List<T>>(pagedData, paginationFilter.PageNumber, paginationFilter.PageSize);
-            var totalPages = ((double)totalRecords / (double)paginationFilter.PageSize);
+            var totalPages = totalRecords / (double)paginationFilter.PageSize;
             int roundedTotalPages = Convert.ToInt32(Math.Ceiling(totalPages));
             response.NextPage = paginationFilter.PageNumber >= 1 && paginationFilter.PageNumber < roundedTotalPages
                 ? uriService

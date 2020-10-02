@@ -3,13 +3,10 @@ using System.Linq;
 using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
-using GlassStoreCore.Data;
-using GlassStoreCore.Data.Response;
+using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Helpers;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UriService;
-using GlassStoreCore.Services.UserService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlassStoreCore.BL.APIs
@@ -18,28 +15,27 @@ namespace GlassStoreCore.BL.APIs
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersService _usersService;
         private readonly IUsersRolesService _usersRolesService;
+        private readonly ObjectMapper _mapper;
         private readonly IUriService _uriService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UsersController(IUsersService usersService, IUsersRolesService usersRolesService, IUriService uriService)
+        public UsersController(IUnitOfWork unitOfWork, IUsersRolesService usersRolesService, IUriService uriService, ObjectMapper mapper)
         {
-            _usersService = usersService;
+            _unitOfWork = unitOfWork;
             _usersRolesService = usersRolesService;
             _uriService = uriService;
+            _mapper = mapper;
         }
 
         public ActionResult<ApplicationUser> GetUsers([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
-            var (users, totalRecords) = _usersService.GetAllUsers(filter.PageNumber, filter.PageSize).Result;
+            var (users, totalRecords) = _unitOfWork.UsersService.GetAll(filter.PageNumber, filter.PageSize).Result;
 
-            if (users == null)
-            {
-                return BadRequest(new Response<List<UserDto>>(users));
-            }
+            var usersDtos = users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>).ToList();
 
-            foreach (var user in users)
+            foreach (var user in usersDtos)
             {
                 var userRoles = _usersRolesService.GetUserRoles(user.Id).Result;
                 user.Roles = new List<UserRoleDto>();
@@ -54,14 +50,14 @@ namespace GlassStoreCore.BL.APIs
                 }
             }
 
-            var pageResponse = PaginationHelper.CreatePagedResponse(users, filter, totalRecords, _uriService, route);
+            var pageResponse = PaginationHelper.CreatePagedResponse(usersDtos, filter, totalRecords, _uriService, route);
             return Ok(pageResponse);
         }
 
         [HttpGet("{id}")]
         public ActionResult<ApplicationUser> GetUser(string id)
         {
-            var user = _usersService.GetUser(id).Result;
+            var user = _unitOfWork.UsersService.Get(id).Result;
 
             if (user == null)
             {
@@ -69,33 +65,33 @@ namespace GlassStoreCore.BL.APIs
             }
 
             var userRoles = _usersRolesService.GetUserRoles(id).Result;
+            var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
 
-
-            user.Roles = new List<UserRoleDto>();
+            userDto.Roles = new List<UserRoleDto>();
             foreach (var role in userRoles)
             {
 
-                user.Roles.Add(new UserRoleDto
+                userDto.Roles.Add(new UserRoleDto
                 {
                     UserId = role.UserId,
                     RoleId = role.RoleId
                 });
             }
 
-            return Ok(user);
+            return Ok(userDto);
         }
 
         [HttpDelete("{id}")]
         public ActionResult<ApplicationUser> DeleteUser(string id)
         {
-            var result = _usersService.DeleteUser(id).Result;
-            if (result.Succeeded)
+            if (_unitOfWork.UsersService.Get(id).Result == null)
             {
-                return Ok("User Has been deleted successfully");
-
+                return NotFound("Please select a valid user");
             }
 
-            return BadRequest("Something wrong");
+            _unitOfWork.UsersService.Delete(id);
+
+            return Ok("Done");
         }
 
         [HttpPost]
@@ -106,7 +102,7 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest();
             }
 
-            var result = _usersService.AddUser(userDto, userDto.Password);
+            var result = _unitOfWork.UsersService.CreateUser(userDto);
 
             if (result.Result == null)
                 return BadRequest("Please Enter valid data");
@@ -116,6 +112,7 @@ namespace GlassStoreCore.BL.APIs
                 role.UserId = result.Result.Id;
                 _usersRolesService.AddUserRole(role);
             }
+
             return Ok();
 
         }
@@ -127,7 +124,10 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest();
             }
-            var result = _usersService.UpdateUser(userDto, id);
+
+            var user = _mapper.Mapper.Map<UserDto, ApplicationUser>(userDto);
+            user.Id = id;
+            _unitOfWork.UsersService.Update(user);
             var updateUserRoles = userDto.Roles;
 
             foreach (var role in updateUserRoles)
@@ -142,13 +142,9 @@ namespace GlassStoreCore.BL.APIs
                 _usersRolesService.DeleteUserRole(role.UserId, role.RoleId);
             }
 
-            if (result.Result == 0)
-            {
-                return BadRequest("Something wrong");
-            }
+            _unitOfWork.Complete();
 
             return Ok();
-
         }
     }
 }
