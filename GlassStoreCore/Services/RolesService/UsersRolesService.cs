@@ -9,22 +9,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GlassStoreCore.Services.RolesService
 {
-    public class UsersRolesService : IUsersRolesService
+    public class UsersRolesService : Service<IdentityUserRole<string>>, IUsersRolesService
     {
         private readonly GlassStoreContext _context;
-        private readonly ObjectMapper _mapper;
+        private readonly ObjectMapper _mapper = new ObjectMapper();
 
-        public UsersRolesService(GlassStoreContext context, ObjectMapper mapper)
+        public UsersRolesService(GlassStoreContext context)
+            : base(context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task<List<UserRoleDto>> GetAllUsersRoles()
-        {
-            var userRoles = await _context.UserRoles.AsNoTracking().ToListAsync();
-            return userRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>).ToList();
-        }
 
         public async Task<List<UserRoleDto>> GetUserRoles(string userId)
         {
@@ -32,17 +27,12 @@ namespace GlassStoreCore.Services.RolesService
             return userRoles.Select(_mapper.Mapper.Map<IdentityUserRole<string>, UserRoleDto>).ToList();
         }
 
-        public async Task<int> DeleteUserRole(string userId, string roleId)
+        public async Task<int> Delete(string userId, string roleId)
         {
             var userRole = await _context.UserRoles.FindAsync(userId, roleId);
             _context.UserRoles.Remove(userRole);
             return await _context.SaveChangesAsync();
         }
-
-        public async Task<int> AddUserRole(UserRoleDto userRole)
-        {
-            await _context.UserRoles.AddAsync(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRole));
-            return await _context.SaveChangesAsync();
-        }
     }
 }
+

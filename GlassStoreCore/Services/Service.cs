@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GlassStoreCore.Services
 {
-    public class Service<TEntity> :  IService<TEntity> where TEntity : class
+    public class Service<TEntity> : IService<TEntity> where TEntity : class
     {
         private readonly GlassStoreContext _glassStoreContext;
 
@@ -43,11 +43,6 @@ namespace GlassStoreCore.Services
         public async void Add(TEntity entity)
         {
             await _glassStoreContext.Set<TEntity>().AddAsync(entity);
-        }
-
-        public void Update(TEntity entity)
-        {
-            _glassStoreContext.Set<TEntity>().Update(entity);
         }
     }
 }

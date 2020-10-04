@@ -5,16 +5,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GlassStoreCore.Services.RolesService
 {
-    public interface IRolesService
+    public interface IRolesService : IService<IdentityRole>
     {
-        public Task<List<RoleDto>> GetAllRoles();
-
-        public Task<RoleDto> GetRole(string id);
-
-        public Task<int> DeleteRole(string id);
-
-        public Task<int> AddRole(RoleDto user);
-
-        public Task<int> UpdateRole(UpdateRoleDto role, string id);
+        public void Update(UpdateRoleDto roleDto, string id);
     }
 }

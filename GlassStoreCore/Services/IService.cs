@@ -14,7 +14,5 @@ namespace GlassStoreCore.Services
         public void Delete(string id);
 
         public void Add(TEntity entity);
-
-        public void Update(TEntity entity);
     }
 }

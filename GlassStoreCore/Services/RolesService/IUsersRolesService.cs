@@ -5,14 +5,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GlassStoreCore.Services.RolesService
 {
-    public interface IUsersRolesService
+    public interface IUsersRolesService : IService<IdentityUserRole<string>>
     {
-        public Task<List<UserRoleDto>> GetAllUsersRoles();
 
         public Task<List<UserRoleDto>> GetUserRoles(string userId);
-
-        public Task<int> DeleteUserRole(string userId, string roleId);
-
-        public Task<int> AddUserRole(UserRoleDto user);
+        public Task<int> Delete(string userId, string roleId);
     }
 }

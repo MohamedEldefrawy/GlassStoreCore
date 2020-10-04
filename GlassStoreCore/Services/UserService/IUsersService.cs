@@ -9,5 +9,7 @@ namespace GlassStoreCore.Services.UserService
     public interface IUsersService : IService<ApplicationUser>
     {
         public Task<ApplicationUser> CreateUser(CreateUserDto user);
+
+        public void Update(UserDto userDto, string id);
     }
 }

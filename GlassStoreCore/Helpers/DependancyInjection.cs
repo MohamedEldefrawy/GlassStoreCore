@@ -16,10 +16,10 @@ namespace GlassStoreCore.Helpers
     {
         public static IServiceCollection AddRepository(this IServiceCollection services)
         {
-            services.AddTransient<IUsersService, UsersService>();
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddTransient<IRolesService, RolesService>();
-            services.AddTransient<IUsersRolesService, UsersRolesService>();
+            services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IRolesService, RolesService>();
+            services.AddScoped<IUsersRolesService, UsersRolesService>();
             return services;
         }
     }
