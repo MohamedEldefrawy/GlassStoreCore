@@ -4,14 +4,16 @@ using GlassStoreCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GlassStoreCore.Data.Migrations
 {
     [DbContext(typeof(GlassStoreContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201004100613_CreateWholeSaleProductsAndWholeSaleOrdersTabels")]
+    partial class CreateWholeSaleProductsAndWholeSaleOrdersTabels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,8 +114,11 @@ namespace GlassStoreCore.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -123,32 +128,6 @@ namespace GlassStoreCore.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("WholeSaleSellingOrders");
-                });
-
-            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrderDetail", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("WholeSaleProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("WholeSaleSellingOrderId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WholeSaleProductId");
-
-                    b.HasIndex("WholeSaleSellingOrderId");
-
-                    b.ToTable("WholeSaleSellingOrderDetails");
                 });
 
             modelBuilder.Entity("IdentityServer4.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -371,19 +350,8 @@ namespace GlassStoreCore.Data.Migrations
             modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrder", b =>
                 {
                     b.HasOne("GlassStoreCore.BL.Models.ApplicationUser", "User")
-                        .WithMany("wholeSaleSellingOrders")
+                        .WithMany("Type")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrderDetail", b =>
-                {
-                    b.HasOne("GlassStoreCore.BL.Models.WholeSaleProduct", "WholeSaleProduct")
-                        .WithMany("WholeSaleSellingOrderDetails")
-                        .HasForeignKey("WholeSaleProductId");
-
-                    b.HasOne("GlassStoreCore.BL.Models.WholeSaleSellingOrder", "WholeSaleSellingOrder")
-                        .WithMany("WholeSaleSellingOrderDetails")
-                        .HasForeignKey("WholeSaleSellingOrderId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

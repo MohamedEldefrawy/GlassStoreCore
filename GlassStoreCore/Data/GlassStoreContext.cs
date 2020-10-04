@@ -12,6 +12,9 @@ namespace GlassStoreCore.Data
 {
     public class GlassStoreContext : ApiAuthorizationDbContext<ApplicationUser>
     {
+        public DbSet<WholeSaleProduct> WholeSaleProducts { get; set; }
+        public DbSet<WholeSaleSellingOrder> WholeSaleSellingOrders { get; set; }
+        public DbSet<WholeSaleSellingOrderDetail> WholeSaleSellingOrderDetails { get; set; }
         public GlassStoreContext(
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
