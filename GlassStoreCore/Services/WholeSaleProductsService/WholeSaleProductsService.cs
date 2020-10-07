@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;

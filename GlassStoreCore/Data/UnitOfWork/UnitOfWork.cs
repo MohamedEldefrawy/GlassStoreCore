@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
+using GlassStoreCore.Services.WholeSaleProductsService;
 using Microsoft.AspNetCore.Identity;
 
 namespace GlassStoreCore.Data.UnitOfWork
@@ -14,6 +15,8 @@ namespace GlassStoreCore.Data.UnitOfWork
         public IUsersService UsersService { get; }
         public IRolesService RolesService { get; }
         public IUsersRolesService UsersRolesService { get; }
+
+        public IWholeSaleProductsService WholeSaleProductsService { get; }
 
         private readonly GlassStoreContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -25,6 +28,7 @@ namespace GlassStoreCore.Data.UnitOfWork
             this.UsersService = new UsersService(_context, _userManager);
             RolesService = new RolesService(_context);
             UsersRolesService = new UsersRolesService(_context);
+            WholeSaleProductsService = new WholeSaleProductsService(_context);
         }
 
         public void Dispose()

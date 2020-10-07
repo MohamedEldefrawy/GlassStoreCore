@@ -7,6 +7,7 @@ using GlassStoreCore.Data;
 using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
+using GlassStoreCore.Services.WholeSaleProductsService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +21,7 @@ namespace GlassStoreCore.Helpers
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IUsersRolesService, UsersRolesService>();
+            services.AddScoped<IWholeSaleProductsService, WholeSaleProductsService>();
             return services;
         }
     }
