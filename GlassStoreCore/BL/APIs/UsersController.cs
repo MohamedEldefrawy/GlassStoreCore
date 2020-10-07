@@ -5,7 +5,6 @@ using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Helpers;
-using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UriService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -69,14 +68,12 @@ namespace GlassStoreCore.BL.APIs
             userDto.Roles = new List<UserRoleDto>();
             foreach (var role in userRoles)
             {
-
                 userDto.Roles.Add(new UserRoleDto
                 {
                     UserId = role.UserId,
                     RoleId = role.RoleId
                 });
             }
-
             return Ok(userDto);
         }
 
@@ -120,18 +117,14 @@ namespace GlassStoreCore.BL.APIs
                     UserId = role.UserId,
                     RoleId = role.RoleId
                 });
-
                 _unitOfWork.Complete();
-
             }
             return Ok();
-
         }
 
         [HttpPut("{id}")]
         public ActionResult<ApplicationUser> UpdateUser(UserDto userDto, string id)
         {
-
             _unitOfWork.UsersService.Update(userDto, id);
             _unitOfWork.Complete();
             return Ok();
