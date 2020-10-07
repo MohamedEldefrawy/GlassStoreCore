@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using GlassStoreCore.BL.DTOs;
+using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -31,6 +32,8 @@ namespace GlassStoreCore.BL
                                                      cfg.CreateMap<IdentityRole, UpdateRoleDto>();
                                                      cfg.CreateMap<IdentityUserRole<string>, UpdateUserRole>();
                                                      cfg.CreateMap<UpdateUserRole, IdentityUserRole<string>>();
+                                                     cfg.CreateMap<WholeSaleProduct, WholeSaleProductsDto>();
+                                                     cfg.CreateMap<WholeSaleProductsDto, WholeSaleProduct>();
 
                                                  });
 

@@ -1,4 +1,5 @@
-﻿using GlassStoreCore.BL;
+﻿using System.Runtime.InteropServices.ComTypes;
+using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs;
 using GlassStoreCore.Data;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +18,7 @@ namespace GlassStoreCore.Services.RolesService
             _context = context;
         }
 
-        public  void Update(UpdateRoleDto roleDto, string id)
+        public void Update(UpdateRoleDto roleDto, string id)
         {
             var selectedRole = _context.Roles.FindAsync(id).Result;
             selectedRole.Name = roleDto.Name;

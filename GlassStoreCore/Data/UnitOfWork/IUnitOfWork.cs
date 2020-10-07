@@ -12,6 +12,7 @@ namespace GlassStoreCore.Data.UnitOfWork
         IUsersService UsersService { get; }
         IRolesService RolesService { get; }
         IUsersRolesService UsersRolesService { get; }
+
         Task<int> Complete();
     }
 }
