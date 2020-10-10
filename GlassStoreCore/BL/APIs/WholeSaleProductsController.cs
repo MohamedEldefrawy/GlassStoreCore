@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Helpers;
 using GlassStoreCore.Services.UriService;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlassStoreCore.BL.APIs
@@ -49,13 +45,54 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet("id")]
         public ActionResult<WholeSaleProduct> GetWholeSaleProduct(string id)
         {
-            GuidConverter converter = new GuidConverter();
             var product = _unitOfWork.WholeSaleProductsService.Get(id).Result;
             if (product == null)
             {
                 return NotFound("Please select a valid id");
             }
             return Ok(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>(product));
+        }
+
+        [HttpPost]
+        public ActionResult<WholeSaleProduct> CreateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto)
+        {
+            var product = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProduct>(wholeSaleProductsDto);
+            _unitOfWork.WholeSaleProductsService.Add(product);
+            var result = _unitOfWork.Complete();
+
+            if (result.Result <= 0)
+            {
+                return BadRequest("Something wrong");
+            }
+
+            return Ok();
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<WholeSaleProduct> UpdateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto, Guid id)
+        {
+            _unitOfWork.WholeSaleProductsService.Update(wholeSaleProductsDto, id);
+            var result = _unitOfWork.Complete();
+
+            if (result.Result <= 0)
+            {
+                return BadRequest("Something wrong");
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<WholeSaleProduct> DeleteWholeSaleProduct(Guid id)
+        {
+            _unitOfWork.WholeSaleProductsService.Delete(id);
+            var result = _unitOfWork.Complete();
+            if (result.Result <= 0)
+            {
+                return BadRequest("Something wrong");
+            }
+
+            return Ok();
         }
     }
 }

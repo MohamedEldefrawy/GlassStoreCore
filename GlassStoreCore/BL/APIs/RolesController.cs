@@ -57,13 +57,14 @@ namespace GlassStoreCore.BL.APIs
         [HttpPost]
         public ActionResult<IdentityRole> CreateRole(RoleDto roleDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Please Enter a valid role data");
-            }
             var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
             _unitOfWork.RolesService.Add(role);
-            _unitOfWork.Complete();
+            var result = _unitOfWork.Complete();
+            if (result.Result <= 0)
+            {
+                return BadRequest("Something wrong!");
+            }
+
             return Ok();
         }
 

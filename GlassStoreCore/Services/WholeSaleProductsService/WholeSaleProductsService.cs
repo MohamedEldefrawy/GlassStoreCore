@@ -27,5 +27,11 @@ namespace GlassStoreCore.Services.WholeSaleProductsService
             wholeSaleProduct.Id = id;
             _context.Entry(wholeSaleProduct).State = EntityState.Modified;
         }
+
+        public void Delete(Guid id)
+        {
+            var selectedProduct = _context.WholeSaleProducts.FindAsync(id).Result;
+            _context.WholeSaleProducts.Remove(selectedProduct);
+        }
     }
 }

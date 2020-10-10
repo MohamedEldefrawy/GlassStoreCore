@@ -57,14 +57,13 @@ namespace GlassStoreCore.BL.APIs
         [HttpPost]
         public ActionResult<IdentityUserRole<string>> CreateUserRole(UserRoleDto userRoleDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
             _unitOfWork.UsersRolesService
-                                    .Add(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto));
-            _unitOfWork.Complete();
+                       .Add(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto));
+            var result = _unitOfWork.Complete();
+            if (result.Result <= 0)
+            {
+                return BadRequest("Something wrong");
+            }
             return Ok();
         }
 
