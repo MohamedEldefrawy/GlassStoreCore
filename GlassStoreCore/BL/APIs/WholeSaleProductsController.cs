@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using GlassStoreCore.BL.APIs.Filters;
@@ -43,6 +44,18 @@ namespace GlassStoreCore.BL.APIs
             var productsDto = products.Select(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>).ToList();
             var pageResponse = PaginationHelper.CreatePagedResponse(productsDto, filter, totalRecords, _uriService, route);
             return Ok(pageResponse);
+        }
+
+        [HttpGet("id")]
+        public ActionResult<WholeSaleProduct> GetWholeSaleProduct(string id)
+        {
+            GuidConverter converter = new GuidConverter();
+            var product = _unitOfWork.WholeSaleProductsService.Get(id).Result;
+            if (product == null)
+            {
+                return NotFound("Please select a valid id");
+            }
+            return Ok(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>(product));
         }
     }
 }
