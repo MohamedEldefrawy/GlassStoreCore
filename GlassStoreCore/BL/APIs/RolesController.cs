@@ -15,11 +15,12 @@ namespace GlassStoreCore.BL.APIs
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUriService _uriService;
-        private readonly ObjectMapper _mapper = new ObjectMapper();
+        private readonly ObjectMapper _mapper;
 
-        public RolesController(IUnitOfWork unitOfWork, IUriService uriService)
+        public RolesController(IUnitOfWork unitOfWork, IUriService uriService, ObjectMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
             _uriService = uriService;
         }
 
