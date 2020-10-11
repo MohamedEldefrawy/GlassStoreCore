@@ -32,7 +32,7 @@ namespace GlassStoreCore.BL.APIs
             var (products, totalRecords) =
                 _unitOfWork.WholeSaleProductsService.GetAll(filter.PageNumber, filter.PageSize).Result;
 
-            if (products == null)
+            if (products.Count == 0)
             {
                 return NotFound("No Products Available");
             }
@@ -42,15 +42,18 @@ namespace GlassStoreCore.BL.APIs
             return Ok(pageResponse);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public ActionResult<WholeSaleProduct> GetWholeSaleProduct(string id)
         {
-            var product = _unitOfWork.WholeSaleProductsService.Get(id).Result;
+            Guid.TryParse(id, out var guid);
+
+            var product = _unitOfWork.WholeSaleProductsService.Get(guid);
             if (product == null)
             {
                 return NotFound("Please select a valid id");
             }
-            return Ok(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>(product));
+
+            return Ok(product);
         }
 
         [HttpPost]
@@ -83,9 +86,10 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<WholeSaleProduct> DeleteWholeSaleProduct(Guid id)
+        public ActionResult<WholeSaleProduct> DeleteWholeSaleProduct(string id)
         {
-            _unitOfWork.WholeSaleProductsService.Delete(id);
+            Guid.TryParse(id, out var guid);
+            _unitOfWork.WholeSaleProductsService.Delete(guid);
             var result = _unitOfWork.Complete();
             if (result.Result <= 0)
             {

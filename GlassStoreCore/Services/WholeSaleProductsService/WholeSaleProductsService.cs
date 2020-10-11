@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;
@@ -32,6 +33,11 @@ namespace GlassStoreCore.Services.WholeSaleProductsService
         {
             var selectedProduct = _context.WholeSaleProducts.FindAsync(id).Result;
             _context.WholeSaleProducts.Remove(selectedProduct);
+        }
+
+        public WholeSaleProductsDto Get(Guid id)
+        {
+            return (_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>(_context.WholeSaleProducts.FindAsync(id).Result));
         }
     }
 }

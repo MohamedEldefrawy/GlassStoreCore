@@ -12,5 +12,7 @@ namespace GlassStoreCore.Services.WholeSaleProductsService
         public void Update(WholeSaleProductsDto wholeSaleProductsDto, Guid id);
         public void Delete(Guid id);
 
+        public WholeSaleProductsDto Get(Guid id);
+
     }
 }
