@@ -1,4 +1,4 @@
-﻿namespace GlassStoreCore.BL.DTOs
+﻿namespace GlassStoreCore.BL.DTOs.UsersRolesDtos
 {
     public class UpdateUserRole
     {

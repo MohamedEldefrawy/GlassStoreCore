@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.Data;
@@ -10,39 +11,56 @@ namespace GlassStoreCore.Services
 {
     public class Service<TEntity> : IService<TEntity> where TEntity : class
     {
-        private readonly GlassStoreContext _glassStoreContext;
+        private readonly GlassStoreContext _context;
 
-        public Service(GlassStoreContext glassStoreContext)
+        public Service(GlassStoreContext context)
         {
-            _glassStoreContext = glassStoreContext;
+            _context = context;
         }
 
         public async Task<(List<TEntity>, int)> GetAll(int pageNumber, int pageSize)
         {
             var validFilter = new PaginationFilter(pageNumber, pageSize);
-            var result = await _glassStoreContext.Set<TEntity>().AsNoTracking().
+            var result = await _context.Set<TEntity>().AsNoTracking().
                                             Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
                                             .Take(validFilter.PageSize)
                                             .ToListAsync();
-            var totalRecords = await _glassStoreContext.Set<TEntity>().CountAsync();
+            var totalRecords = await _context.Set<TEntity>().CountAsync();
             return (result, totalRecords);
 
         }
 
-        public async Task<TEntity> Get(string id)
+        public async Task<TEntity> FindById(params object[] primaryKeys)
         {
-            return await _glassStoreContext.Set<TEntity>().FindAsync(id);
+            var result = await _context.Set<TEntity>().FindAsync(primaryKeys);
+            _context.Entry(result).State = EntityState.Unchanged;
+            return result;
         }
 
-        public async void Delete(string id)
+        public async Task<int> Add(TEntity entity)
         {
-            var entity = await _glassStoreContext.Set<TEntity>().FindAsync(id);
-            _glassStoreContext.Set<TEntity>().Remove(entity);
+            await _context.Set<TEntity>().AddAsync(entity);
+            return await _context.SaveChangesAsync();
         }
 
-        public async void Add(TEntity entity)
+        public async Task<int> DeleteAsync(TEntity entity)
         {
-            await _glassStoreContext.Set<TEntity>().AddAsync(entity);
+            _context.Set<TEntity>().Attach(entity);
+            _context.Entry(entity).State = EntityState.Deleted;
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> filter)
+        {
+            return await _context.Set<TEntity>().AsNoTracking().Where(filter).ToListAsync();
+        }
+
+
+        public async Task<int> UpdateAsync(TEntity entity)
+        {
+            _context.Set<TEntity>().Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+            return await _context.SaveChangesAsync();
         }
     }
 }

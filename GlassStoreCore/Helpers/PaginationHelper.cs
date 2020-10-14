@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.Data.Response;
-using GlassStoreCore.Services.UriService;
+using GlassStoreCore.Services.PaginationUowService;
 
 namespace GlassStoreCore.Helpers
 {
     public static class PaginationHelper
     {
         public static PagedResponse<List<T>> CreatePagedResponse<T>(List<T> pagedData,
-            PaginationFilter paginationFilter, int totalRecords, IUriService uriService, string route)
+            PaginationFilter paginationFilter, int totalRecords, IPaginationUow uriService, string route)
         {
             var response = new PagedResponse<List<T>>(pagedData, paginationFilter.PageNumber, paginationFilter.PageSize);
             var totalPages = totalRecords / (double)paginationFilter.PageSize;

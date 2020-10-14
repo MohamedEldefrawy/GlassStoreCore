@@ -1,36 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 using System.Threading.Tasks;
 using GlassStoreCore.BL.Models;
-using GlassStoreCore.Services.RolesService;
+using GlassStoreCore.Services;
 using GlassStoreCore.Services.UserService;
-using GlassStoreCore.Services.WholeSaleProductsService;
 using Microsoft.AspNetCore.Identity;
 
 namespace GlassStoreCore.Data.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public IUsersService UsersService { get; }
-        public IRolesService RolesService { get; }
-        public IUsersRolesService UsersRolesService { get; }
-
-        public IWholeSaleProductsService WholeSaleProductsService { get; }
+        private IUsersService UsersService { get; }
 
         private readonly GlassStoreContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private Hashtable _services;
 
         public UnitOfWork(GlassStoreContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
-            _userManager = userManager;
-            this.UsersService = new UsersService(_context, _userManager);
-            RolesService = new RolesService(_context);
-            UsersRolesService = new UsersRolesService(_context);
-            WholeSaleProductsService = new WholeSaleProductsService(_context);
+            UsersService = new UsersService(_context, userManager);
         }
 
+        public IService<TEntity> Service<TEntity>() where TEntity : class
+        {
+            _services ??= new Hashtable();
+            var type = typeof(Service<>).MakeGenericType(typeof(TEntity));
+            if (_services.ContainsKey(typeof(TEntity).Name)) return (Service<TEntity>)_services[typeof(TEntity)];
+
+            var service = (Service<TEntity>)Activator.CreateInstance(type, _context);
+            _services.Add(typeof(TEntity).Name, service);
+
+            return service;
+        }
+
+        public IUsersService GetUsersService()
+        {
+            return UsersService;
+        }
         public void Dispose()
         {
             Dispose(true);

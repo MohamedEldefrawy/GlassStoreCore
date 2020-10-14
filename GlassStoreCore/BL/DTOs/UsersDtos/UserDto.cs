@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using GlassStoreCore.BL.DTOs.UsersRolesDtos;
 
-namespace GlassStoreCore.BL.DTOs
+namespace GlassStoreCore.BL.DTOs.UsersDtos
 {
     public class UserDto
     {

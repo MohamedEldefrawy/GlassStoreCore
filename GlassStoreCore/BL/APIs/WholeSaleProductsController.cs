@@ -3,10 +3,10 @@ using System.Linq;
 using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;
-using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Helpers;
-using GlassStoreCore.Services.UriService;
+using GlassStoreCore.Services.PaginationUowService;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace GlassStoreCore.BL.APIs
 {
@@ -15,14 +15,12 @@ namespace GlassStoreCore.BL.APIs
     public class WholeSaleProductsController : ControllerBase
     {
         private readonly ObjectMapper _mapper;
-        private readonly IUriService _uriService;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaginationUow _paginationUow;
 
-        public WholeSaleProductsController(ObjectMapper mapper, IUriService uriService, IUnitOfWork unitOfWork)
+        public WholeSaleProductsController(ObjectMapper mapper, IPaginationUow uriService)
         {
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
-            _uriService = uriService;
+            _paginationUow = uriService;
         }
 
         [HttpGet]
@@ -30,7 +28,7 @@ namespace GlassStoreCore.BL.APIs
         {
             var route = Request.Path.Value;
             var (products, totalRecords) =
-                _unitOfWork.WholeSaleProductsService.GetAll(filter.PageNumber, filter.PageSize).Result;
+                _paginationUow.Service<WholeSaleProduct>().GetAll(filter.PageNumber, filter.PageSize).Result;
 
             if (products.Count == 0)
             {
@@ -38,7 +36,7 @@ namespace GlassStoreCore.BL.APIs
             }
 
             var productsDto = products.Select(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>).ToList();
-            var pageResponse = PaginationHelper.CreatePagedResponse(productsDto, filter, totalRecords, _uriService, route);
+            var pageResponse = PaginationHelper.CreatePagedResponse(productsDto, filter, totalRecords, _paginationUow, route);
             return Ok(pageResponse);
         }
 
@@ -47,21 +45,22 @@ namespace GlassStoreCore.BL.APIs
         {
             Guid.TryParse(id, out var guid);
 
-            var product = _unitOfWork.WholeSaleProductsService.Get(guid);
+            var product = _paginationUow.Service<WholeSaleProduct>().FindById(guid).Result;
+
             if (product == null)
             {
                 return NotFound("Please select a valid id");
             }
 
-            return Ok(product);
+            return Ok(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>(product));
         }
 
         [HttpPost]
         public ActionResult<WholeSaleProduct> CreateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto)
         {
             var product = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProduct>(wholeSaleProductsDto);
-            _unitOfWork.WholeSaleProductsService.Add(product);
-            var result = _unitOfWork.Complete();
+            var result
+            = _paginationUow.Service<WholeSaleProduct>().Add(product);
 
             if (result.Result <= 0)
             {
@@ -74,8 +73,9 @@ namespace GlassStoreCore.BL.APIs
         [HttpPut("{id}")]
         public ActionResult<WholeSaleProduct> UpdateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto, Guid id)
         {
-            _unitOfWork.WholeSaleProductsService.Update(wholeSaleProductsDto, id);
-            var result = _unitOfWork.Complete();
+            var selectedProduct = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProduct>(wholeSaleProductsDto);
+            selectedProduct.Id = id;
+            var result = _paginationUow.Service<WholeSaleProduct>().UpdateAsync(selectedProduct);
 
             if (result.Result <= 0)
             {
@@ -89,8 +89,15 @@ namespace GlassStoreCore.BL.APIs
         public ActionResult<WholeSaleProduct> DeleteWholeSaleProduct(string id)
         {
             Guid.TryParse(id, out var guid);
-            _unitOfWork.WholeSaleProductsService.Delete(guid);
-            var result = _unitOfWork.Complete();
+            var wholeSaleProductService = _paginationUow.Service<WholeSaleProduct>();
+            var selectedProduct = wholeSaleProductService.FindById(guid).Result;
+            if (selectedProduct == null)
+            {
+                return NotFound("Cannot find this product");
+            }
+
+            var result = wholeSaleProductService.DeleteAsync(selectedProduct);
+
             if (result.Result <= 0)
             {
                 return BadRequest("Something wrong");

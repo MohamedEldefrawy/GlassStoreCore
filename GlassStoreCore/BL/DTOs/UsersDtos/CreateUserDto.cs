@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using GlassStoreCore.BL.DTOs.UsersRolesDtos;
 
-namespace GlassStoreCore.BL.DTOs
+namespace GlassStoreCore.BL.DTOs.UsersDtos
 {
     public class CreateUserDto
     {
