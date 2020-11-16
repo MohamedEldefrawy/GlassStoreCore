@@ -14,7 +14,6 @@ namespace GlassStoreCore.Services.PaginationUowService
     {
         private readonly string _baseUri;
 
-
         public PaginationUow(GlassStoreContext context, UserManager<ApplicationUser> userManager, IServiceProvider serviceProvider)
             : base(context, userManager)
         {
@@ -23,7 +22,6 @@ namespace GlassStoreCore.Services.PaginationUowService
             _baseUri = string.Concat(request.Scheme, "://",
                                      request.Host.ToUriComponent());
         }
-
 
         public Uri GetPageUri(PaginationFilter paginationFilter, string route)
         {

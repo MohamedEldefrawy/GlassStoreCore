@@ -67,5 +67,28 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok();
         }
+
+        [HttpPut]
+        public ActionResult<WholeSaleSellingOrder> UpdateWholeSaleSellingOrder(WholeSaleSellingOrdersDto orderDto, int id)
+        {
+            var selectedOrder = _paginationUow.Service<WholeSaleSellingOrder>().FindById(id).Result;
+
+            if (selectedOrder == null)
+            {
+                return NotFound("Please select valid order id");
+            }
+
+            _mapper.Mapper.Map(orderDto, selectedOrder);
+
+            var result = _paginationUow.Service<WholeSaleSellingOrder>().UpdateAsync(selectedOrder).Result;
+            if (result <= 0)
+            {
+                return BadRequest("Something wrong");
+            }
+
+            return Ok();
+        }
+
+
     }
 }
