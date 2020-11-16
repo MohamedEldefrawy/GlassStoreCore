@@ -52,5 +52,20 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(_mapper.Mapper.Map<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>(selectedOrder));
         }
+
+        [HttpPost]
+        public ActionResult<WholeSaleSellingOrder> CreateWholeSaleSellingOrder(
+            WholeSaleSellingOrdersDto wholeSaleSellingOrdersDto)
+        {
+            var order = _mapper.Mapper.Map<WholeSaleSellingOrdersDto, WholeSaleSellingOrder>(wholeSaleSellingOrdersDto);
+            var result = _paginationUow.Service<WholeSaleSellingOrder>().Add(order).Result;
+
+            if (result <= 0)
+            {
+                return BadRequest("Something wrong");
+            }
+
+            return Ok();
+        }
     }
 }

@@ -30,7 +30,5 @@ namespace GlassStoreCore.Helpers
             response.TotalRecords = totalRecords;
             return response;
         }
-
-
     }
 }
