@@ -40,5 +40,17 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(pageResponse);
         }
+
+        [HttpGet]
+        public ActionResult<WholeSaleSellingOrder> GetWholeSaleSellingOrder(string id)
+        {
+            var selectedOrder = _paginationUow.Service<WholeSaleSellingOrder>().FindById(id).Result;
+            if (selectedOrder == null)
+            {
+                return NotFound("please select a valid order id");
+            }
+
+            return Ok(_mapper.Mapper.Map<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>(selectedOrder));
+        }
     }
 }
