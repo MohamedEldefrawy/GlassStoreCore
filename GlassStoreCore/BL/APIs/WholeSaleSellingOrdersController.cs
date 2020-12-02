@@ -89,6 +89,24 @@ namespace GlassStoreCore.BL.APIs
             return Ok();
         }
 
+        [HttpDelete]
+        public ActionResult<WholeSaleSellingOrder> DeleteWholeSaleSellingOrder(string id)
+        {
+            var selectedOrder = _paginationUow.Service<WholeSaleSellingOrder>().FindById(id).Result;
 
+            if (selectedOrder == null)
+            {
+                return NotFound("Please select a valid Id");
+            }
+
+            var result = _paginationUow.Service<WholeSaleSellingOrder>().DeleteAsync(selectedOrder).Result;
+
+            if (result == 0)
+            {
+                return BadRequest("Something wrong");
+            }
+
+            return Ok();
+        }
     }
 }
