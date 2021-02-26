@@ -42,6 +42,17 @@ namespace GlassStoreCore
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            });
             // In production, the React files will be served from this directory
             //services.AddSpaStaticFiles(configuration =>
             //{
@@ -66,6 +77,7 @@ namespace GlassStoreCore
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors();
             //app.UseSpaStaticFiles();
 
             app.UseRouting();
