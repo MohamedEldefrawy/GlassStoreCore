@@ -7,21 +7,21 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GlassStoreCore.Data.Migrations
+namespace GlassStoreCore.Migrations
 {
     [DbContext(typeof(GlassStoreContext))]
-    [Migration("00000000000000_CreateIdentitySchema")]
-    partial class CreateIdentitySchema
+    [Migration("20210228173907_hotfix")]
+    partial class hotfix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.0-rc1.19455.8")
+                .HasAnnotation("ProductVersion", "3.1.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("GlassStoreCore.Models.ApplicationUser", b =>
+            modelBuilder.Entity("GlassStoreCore.BL.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -84,6 +84,75 @@ namespace GlassStoreCore.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UnitsInStock")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WholeSaleProducts");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrder", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("WholeSaleSellingOrders");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrderDetail", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("WholeSaleProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WholeSaleSellingOrderId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WholeSaleProductId");
+
+                    b.HasIndex("WholeSaleSellingOrderId");
+
+                    b.ToTable("WholeSaleSellingOrderDetails");
                 });
 
             modelBuilder.Entity("IdentityServer4.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -303,6 +372,24 @@ namespace GlassStoreCore.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrder", b =>
+                {
+                    b.HasOne("GlassStoreCore.BL.Models.ApplicationUser", "User")
+                        .WithMany("wholeSaleSellingOrders")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrderDetail", b =>
+                {
+                    b.HasOne("GlassStoreCore.BL.Models.WholeSaleProduct", "WholeSaleProduct")
+                        .WithMany("WholeSaleSellingOrderDetails")
+                        .HasForeignKey("WholeSaleProductId");
+
+                    b.HasOne("GlassStoreCore.BL.Models.WholeSaleSellingOrder", "WholeSaleSellingOrder")
+                        .WithMany("WholeSaleSellingOrderDetails")
+                        .HasForeignKey("WholeSaleSellingOrderId");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -314,7 +401,7 @@ namespace GlassStoreCore.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("GlassStoreCore.Models.ApplicationUser", null)
+                    b.HasOne("GlassStoreCore.BL.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -323,7 +410,7 @@ namespace GlassStoreCore.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("GlassStoreCore.Models.ApplicationUser", null)
+                    b.HasOne("GlassStoreCore.BL.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -338,7 +425,7 @@ namespace GlassStoreCore.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GlassStoreCore.Models.ApplicationUser", null)
+                    b.HasOne("GlassStoreCore.BL.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -347,7 +434,7 @@ namespace GlassStoreCore.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("GlassStoreCore.Models.ApplicationUser", null)
+                    b.HasOne("GlassStoreCore.BL.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

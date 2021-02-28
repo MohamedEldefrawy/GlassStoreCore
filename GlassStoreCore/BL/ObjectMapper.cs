@@ -21,26 +21,19 @@ namespace GlassStoreCore.BL
         {
             var config = new MapperConfiguration(cfg =>
                                                  {
-                                                     cfg.CreateMap<ApplicationUser, CreateUserDto>();
-                                                     cfg.CreateMap<CreateUserDto, ApplicationUser>();
-                                                     cfg.CreateMap<ApplicationUser, UserDto>();
-                                                     cfg.CreateMap<UserDto, ApplicationUser>();
-                                                     cfg.CreateMap<IdentityUserRole<string>, UserRoleDto>();
-                                                     cfg.CreateMap<UserRoleDto, IdentityUserRole<string>>();
-                                                     cfg.CreateMap<RoleDto, IdentityRole>();
-                                                     cfg.CreateMap<IdentityRole, RoleDto>();
-                                                     cfg.CreateMap<UserRoleDto, IdentityUserRole<string>>();
-                                                     cfg.CreateMap<IdentityUserRole<string>, UserRoleDto>();
-                                                     cfg.CreateMap<UpdateRoleDto, IdentityRole>();
-                                                     cfg.CreateMap<IdentityRole, UpdateRoleDto>();
-                                                     cfg.CreateMap<IdentityUserRole<string>, UpdateUserRole>();
-                                                     cfg.CreateMap<UpdateUserRole, IdentityUserRole<string>>();
-                                                     cfg.CreateMap<WholeSaleProduct, WholeSaleProductsDto>();
-                                                     cfg.CreateMap<WholeSaleProductsDto, WholeSaleProduct>();
-
+                                                     cfg.CreateMap<ApplicationUser, CreateUserDto>().ReverseMap();
+                                                     cfg.CreateMap<ApplicationUser, UserDto>().ReverseMap();
+                                                     cfg.CreateMap<IdentityUserRole<string>, UserRoleDto>().ReverseMap();
+                                                     cfg.CreateMap<RoleDto, IdentityRole>().ReverseMap();
+                                                     cfg.CreateMap<UserRoleDto, IdentityUserRole<string>>().ReverseMap();
+                                                     cfg.CreateMap<UpdateRoleDto, IdentityRole>().ReverseMap();
+                                                     cfg.CreateMap<IdentityUserRole<string>, UpdateUserRole>().ReverseMap();
+                                                     cfg.CreateMap<WholeSaleProductsDto, WholeSaleProduct>().ReverseMap();
+                                                     cfg.CreateMap<WholeSaleProductsOrderDetailsDto, WholeSaleSellingOrderDetail>().ReverseMap();
                                                  });
 
             this.Mapper = config.CreateMapper();
+
 
         }
     }

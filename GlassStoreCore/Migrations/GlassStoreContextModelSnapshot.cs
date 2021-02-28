@@ -4,16 +4,14 @@ using GlassStoreCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GlassStoreCore.Data.Migrations
+namespace GlassStoreCore.Migrations
 {
     [DbContext(typeof(GlassStoreContext))]
-    [Migration("20200914181413_CreateDataBase")]
-    partial class CreateDataBase
+    partial class GlassStoreContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,6 +82,75 @@ namespace GlassStoreCore.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UnitsInStock")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WholeSaleProducts");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrder", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("WholeSaleSellingOrders");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrderDetail", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("WholeSaleProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WholeSaleSellingOrderId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WholeSaleProductId");
+
+                    b.HasIndex("WholeSaleSellingOrderId");
+
+                    b.ToTable("WholeSaleSellingOrderDetails");
                 });
 
             modelBuilder.Entity("IdentityServer4.EntityFramework.Entities.DeviceFlowCodes", b =>
@@ -301,6 +368,24 @@ namespace GlassStoreCore.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrder", b =>
+                {
+                    b.HasOne("GlassStoreCore.BL.Models.ApplicationUser", "User")
+                        .WithMany("wholeSaleSellingOrders")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("GlassStoreCore.BL.Models.WholeSaleSellingOrderDetail", b =>
+                {
+                    b.HasOne("GlassStoreCore.BL.Models.WholeSaleProduct", "WholeSaleProduct")
+                        .WithMany("WholeSaleSellingOrderDetails")
+                        .HasForeignKey("WholeSaleProductId");
+
+                    b.HasOne("GlassStoreCore.BL.Models.WholeSaleSellingOrder", "WholeSaleSellingOrder")
+                        .WithMany("WholeSaleSellingOrderDetails")
+                        .HasForeignKey("WholeSaleSellingOrderId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
