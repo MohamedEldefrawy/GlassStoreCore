@@ -49,7 +49,11 @@ namespace GlassStoreCore.BL.APIs
 
             if (product == null)
             {
-                return NotFound("Please select a valid id");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "No products found."
+                });
             }
 
             return Ok(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>(product));
@@ -64,10 +68,18 @@ namespace GlassStoreCore.BL.APIs
 
             if (result.Result <= 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Faild to create product."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Whole sale product has been created successfully."
+            });
         }
 
         [HttpPut("{id}")]
@@ -79,10 +91,18 @@ namespace GlassStoreCore.BL.APIs
 
             if (result.Result <= 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't Update selected product."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected product updated successfully."
+            });
         }
 
         [HttpDelete("{id}")]
@@ -93,17 +113,29 @@ namespace GlassStoreCore.BL.APIs
             var selectedProduct = wholeSaleProductService.FindById(guid).Result;
             if (selectedProduct == null)
             {
-                return NotFound("Cannot find this product");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected product not found."
+                });
             }
 
             var result = wholeSaleProductService.DeleteAsync(selectedProduct);
 
             if (result.Result <= 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't Delete selected product."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected product has been deleted succesfully."
+            });
         }
     }
 }

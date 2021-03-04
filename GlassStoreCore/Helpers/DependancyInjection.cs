@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs.UsersDtos;
+using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Services.PaginationUowService;
@@ -24,6 +25,8 @@ namespace GlassStoreCore.Helpers
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IPaginationUow, PaginationUow>();
             services.AddTransient<IValidator<CreateUserDto>, UsersValidator>();
+            services.AddTransient<IValidator<WholeSaleProductsDto>, WholeSaleProductsValidator>();
+
 
             return services;
         }
