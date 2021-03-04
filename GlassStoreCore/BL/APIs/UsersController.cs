@@ -91,17 +91,29 @@ namespace GlassStoreCore.BL.APIs
             var selectedUser = userService.FindById(id).Result;
             if (selectedUser == null)
             {
-                return NotFound("Please select a valid user");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected user not found."
+                });
             }
 
             var result = userService.DeleteAsync(selectedUser).Result;
 
             if (result == 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Faild to Delete selected user."
+                });
             }
 
-            return Ok("Done");
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected user has been deleted succesfully."
+            });
         }
 
         [HttpPost]
