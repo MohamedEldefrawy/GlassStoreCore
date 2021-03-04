@@ -36,6 +36,15 @@ namespace GlassStoreCore.BL.APIs
             var route = Request.Path.Value;
             var (users, totalRecords) = _usersService.GetAll(filter.PageNumber, filter.PageSize).Result;
 
+            if (users == null)
+            {
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Couldn't Find users."
+                });
+            }
+
             var usersDtos = users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>).ToList();
 
             foreach (var user in usersDtos)
@@ -160,7 +169,11 @@ namespace GlassStoreCore.BL.APIs
             var user = _usersService.FindById(id).Result;
             if (user == null)
             {
-                return NotFound("Please select a valid user");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Couldn't Find Selected user"
+                });
             }
 
             _mapper.Mapper.Map(userDto, user);
@@ -170,9 +183,17 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't update selected user."
+                });
             }
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected user has been updated successfully."
+            });
         }
     }
 }
