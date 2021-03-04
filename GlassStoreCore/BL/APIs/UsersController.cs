@@ -65,7 +65,11 @@ namespace GlassStoreCore.BL.APIs
 
             if (user == null)
             {
-                return BadRequest("User not found please use valid id");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected user not found."
+                });
             }
 
             var userRoles = _userRolesService.GetAll(u => u.UserId == id).Result;
@@ -80,7 +84,11 @@ namespace GlassStoreCore.BL.APIs
                     RoleId = role.RoleId
                 });
             }
-            return Ok(userDto);
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "user selected successfully."
+            });
         }
 
         [HttpDelete("{id}")]
