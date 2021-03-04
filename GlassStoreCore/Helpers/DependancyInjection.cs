@@ -23,7 +23,7 @@ namespace GlassStoreCore.Helpers
             services.AddScoped<IWholeSaleProductsService, WholeSaleProductsService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IPaginationUow, PaginationUow>();
-            services.AddTransient<IValidator<ApplicationUser>, UsersValidator>();
+            services.AddTransient<IValidator<CreateUserDto>, UsersValidator>();
 
             return services;
         }

@@ -1,18 +1,33 @@
 ﻿using FluentValidation;
 using GlassStoreCore.BL.DTOs.UsersDtos;
-using GlassStoreCore.BL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace GlassStoreCore.Validators
 {
-    public class UsersValidator : AbstractValidator<ApplicationUser>
+    public class UsersValidator : AbstractValidator<CreateUserDto>
     {
         public UsersValidator()
         {
-            
+            RuleFor(user => user.Password)
+                .Length(6, 20)
+                .WithMessage("Please Enter a valid passwod with min Lenght 6 and max 20.");
+
+
+            RuleFor(user => user.Email)
+                .EmailAddress()
+                .WithMessage("Please Enter a valid Email.");
+
+            RuleFor(user => user.UserName)
+                .Length(3, 20)
+                .NotEmpty()
+                .NotNull()
+                .WithMessage("Please Enter a valid userName.");
+
+            RuleFor(user => user.PhoneNumber)
+                .NotNull()
+                .NotEmpty()
+                .Length(9, 11)
+                .Matches(@"(0)[0-9]{9}")
+                .WithMessage("Please Enter a valid Phone number.");
+
         }
     }
 }

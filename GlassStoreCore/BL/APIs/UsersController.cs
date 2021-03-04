@@ -8,6 +8,7 @@ using GlassStoreCore.Helpers;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
 using GlassStoreCore.Services.UserService;
+using GlassStoreCore.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -106,15 +107,15 @@ namespace GlassStoreCore.BL.APIs
         [HttpPost]
         public ActionResult<ApplicationUser> CreateUser(CreateUserDto userDto)
         {
-            if (!ModelState.IsValid)
+            UsersValidator validator = new UsersValidator();
+            var validationResult = validator.Validate(userDto);
+
+            if (!validationResult.IsValid)
             {
-                return BadRequest();
+                return BadRequest(validationResult.Errors);
             }
 
             var result = _usersService.CreateUser(userDto);
-
-            if (result.Result == null)
-                return BadRequest("Please Enter valid data");
 
             foreach (var role in userDto.Roles)
             {
@@ -126,7 +127,11 @@ namespace GlassStoreCore.BL.APIs
                 });
                 _paginationUow.Complete();
             }
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "User Created Successfully."
+            });
         }
 
         [HttpPut("{id}")]
