@@ -23,7 +23,12 @@ namespace GlassStoreCore.Services.UserService
             var newUser = _mapper.Mapper.Map<CreateUserDto, ApplicationUser>(user);
             newUser.NormalizedEmail = newUser.Email.ToUpper();
             newUser.NormalizedUserName = newUser.UserName.ToUpper();
-            await _userManager.CreateAsync(newUser, user.Password);
+            var result = await _userManager.CreateAsync(newUser, user.Password);
+
+            if (!result.Succeeded)
+            {
+                newUser = null;
+            }
             return newUser;
         }
     }

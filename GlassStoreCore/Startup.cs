@@ -10,6 +10,7 @@ using GlassStoreCore.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FluentValidation.AspNetCore;
 
 namespace GlassStoreCore
 {
@@ -25,6 +26,15 @@ namespace GlassStoreCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            });
+
             services.AddDependency();
             services.AddDbContext<GlassStoreContext>(options =>
                                                          options.UseSqlServer(
@@ -36,11 +46,17 @@ namespace GlassStoreCore
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, GlassStoreContext>();
 
+
+
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddMvc(setup =>
+            {
+            }).AddFluentValidation();
 
             services.AddCors(options =>
             {

@@ -1,9 +1,13 @@
-﻿using GlassStoreCore.BL;
+﻿using FluentValidation;
+using GlassStoreCore.BL;
+using GlassStoreCore.BL.DTOs.UsersDtos;
+using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Services.PaginationUowService;
 using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
 using GlassStoreCore.Services.WholeSaleProductsService;
+using GlassStoreCore.Validators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GlassStoreCore.Helpers
@@ -19,6 +23,8 @@ namespace GlassStoreCore.Helpers
             services.AddScoped<IWholeSaleProductsService, WholeSaleProductsService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IPaginationUow, PaginationUow>();
+            services.AddTransient<IValidator<ApplicationUser>, UsersValidator>();
+
             return services;
         }
     }
