@@ -3,7 +3,7 @@ using GlassStoreCore.Data;
 
 namespace GlassStoreCore.Services.WholeSaleProductsService
 {
-    public class WholeSaleProductsService : Service<WholeSaleProduct>, IWholeSaleProductsService
+    public class WholeSaleProductsService : Service<WholeSaleProducts>, IWholeSaleProductsService
     {
         public WholeSaleProductsService(GlassStoreContext context) : base(context)
         {

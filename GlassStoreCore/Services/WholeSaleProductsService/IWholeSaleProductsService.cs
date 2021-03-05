@@ -2,7 +2,7 @@
 
 namespace GlassStoreCore.Services.WholeSaleProductsService
 {
-    public interface IWholeSaleProductsService : IService<WholeSaleProduct>
+    public interface IWholeSaleProductsService : IService<WholeSaleProducts>
     {
     }
 }

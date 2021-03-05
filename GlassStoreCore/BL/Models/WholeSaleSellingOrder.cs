@@ -15,7 +15,7 @@ namespace GlassStoreCore.BL.Models
         public DateTime OrderDate { get; set; }
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
-        public ICollection<WholeSaleSellingOrderDetail> WholeSaleSellingOrderDetails { get; set; }
+        public ICollection<WholeSaleSellingOrderDetails> WholeSaleSellingOrderDetails { get; set; }
 
     }
 }

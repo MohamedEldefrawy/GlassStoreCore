@@ -43,6 +43,11 @@ namespace GlassStoreCore.Services
             return await _context.SaveChangesAsync();
         }
 
+        public void DetachEntity(TEntity entity)
+        {
+            _context.Entry(entity).State = EntityState.Detached;
+        }
+
         public async Task<int> DeleteAsync(TEntity entity)
         {
             _context.Set<TEntity>().Attach(entity);

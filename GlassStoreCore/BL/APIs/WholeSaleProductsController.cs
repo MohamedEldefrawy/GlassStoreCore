@@ -24,28 +24,28 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpGet]
-        public ActionResult<WholeSaleProduct> GetWholeSaleProducts([FromQuery] PaginationFilter filter)
+        public ActionResult<WholeSaleProducts> GetWholeSaleProducts([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
             var (products, totalRecords) =
-                _paginationUow.Service<WholeSaleProduct>().GetAll(filter.PageNumber, filter.PageSize).Result;
+                _paginationUow.Service<WholeSaleProducts>().GetAll(filter.PageNumber, filter.PageSize).Result;
 
             if (products.Count == 0)
             {
                 return NotFound("No Products Available");
             }
 
-            var productsDto = products.Select(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>).ToList();
+            var productsDto = products.Select(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>).ToList();
             var pageResponse = PaginationHelper.CreatePagedResponse(productsDto, filter, totalRecords, _paginationUow, route);
             return Ok(pageResponse);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<WholeSaleProduct> GetWholeSaleProduct(string id)
+        public ActionResult<WholeSaleProducts> GetWholeSaleProduct(string id)
         {
             Guid.TryParse(id, out var guid);
 
-            var product = _paginationUow.Service<WholeSaleProduct>().FindById(guid).Result;
+            var product = _paginationUow.Service<WholeSaleProducts>().FindById(guid).Result;
 
             if (product == null)
             {
@@ -56,15 +56,15 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            return Ok(_mapper.Mapper.Map<WholeSaleProduct, WholeSaleProductsDto>(product));
+            return Ok(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>(product));
         }
 
         [HttpPost]
-        public ActionResult<WholeSaleProduct> CreateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto)
+        public ActionResult<WholeSaleProducts> CreateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto)
         {
-            var product = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProduct>(wholeSaleProductsDto);
+            var product = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProducts>(wholeSaleProductsDto);
             var result
-            = _paginationUow.Service<WholeSaleProduct>().Add(product);
+            = _paginationUow.Service<WholeSaleProducts>().Add(product);
 
             if (result.Result <= 0)
             {
@@ -83,11 +83,11 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpPut("{id}")]
-        public ActionResult<WholeSaleProduct> UpdateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto, Guid id)
+        public ActionResult<WholeSaleProducts> UpdateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto, Guid id)
         {
-            var selectedProduct = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProduct>(wholeSaleProductsDto);
+            var selectedProduct = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProducts>(wholeSaleProductsDto);
             selectedProduct.Id = id;
-            var result = _paginationUow.Service<WholeSaleProduct>().UpdateAsync(selectedProduct);
+            var result = _paginationUow.Service<WholeSaleProducts>().UpdateAsync(selectedProduct);
 
             if (result.Result <= 0)
             {
@@ -106,10 +106,10 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<WholeSaleProduct> DeleteWholeSaleProduct(string id)
+        public ActionResult<WholeSaleProducts> DeleteWholeSaleProduct(string id)
         {
             Guid.TryParse(id, out var guid);
-            var wholeSaleProductService = _paginationUow.Service<WholeSaleProduct>();
+            var wholeSaleProductService = _paginationUow.Service<WholeSaleProducts>();
             var selectedProduct = wholeSaleProductService.FindById(guid).Result;
             if (selectedProduct == null)
             {

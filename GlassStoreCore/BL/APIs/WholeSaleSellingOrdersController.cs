@@ -17,13 +17,17 @@ namespace GlassStoreCore.BL.APIs
     {
         private readonly ObjectMapper _mapper;
         private readonly IPaginationUow _paginationUow;
-        private readonly IService<WholeSaleProduct> _wholeSaleProductService;
+        private readonly IService<WholeSaleProducts> _wholeSaleProductService;
+        private readonly IService<WholeSaleSellingOrder> _wholeSaleSellingOrderService;
+        private readonly IService<WholeSaleSellingOrderDetails> _wholeSaleSellingOrderDetailsService;
 
         public WholeSaleSellingOrdersController(ObjectMapper mapper, IPaginationUow paginationUow)
         {
             _mapper = mapper;
             _paginationUow = paginationUow;
-            _wholeSaleProductService = _paginationUow.Service<WholeSaleProduct>();
+            _wholeSaleProductService = _paginationUow.Service<WholeSaleProducts>();
+            _wholeSaleSellingOrderService = _paginationUow.Service<WholeSaleSellingOrder>();
+            _wholeSaleSellingOrderDetailsService = _paginationUow.Service<WholeSaleSellingOrderDetails>();
         }
 
         [HttpGet]
@@ -64,10 +68,19 @@ namespace GlassStoreCore.BL.APIs
         {
 
             var order = MappingSellingOrder(wholeSaleSellingOrdersDto);
+            var od = order.WholeSaleSellingOrderDetails;
+            order.WholeSaleSellingOrderDetails = null;
+            var result = _wholeSaleSellingOrderService.Add(order).Result;
 
-            var result = _paginationUow.Service<WholeSaleSellingOrder>().Add(order).Result;
+            int odResult = 0;
+            foreach (var orderDetail in od)
+            {
+                odResult += _wholeSaleSellingOrderDetailsService.Add(orderDetail).Result;
 
-            if (result <= 0)
+            }
+
+
+            if (result <= 0 || odResult <= 0)
             {
                 return BadRequest("Something wrong");
             }
@@ -85,23 +98,22 @@ namespace GlassStoreCore.BL.APIs
 
             };
 
-            var orderDetails = new List<WholeSaleSellingOrderDetail>();
+            var orderDetails = new List<WholeSaleSellingOrderDetails>();
 
             foreach (var orderDetail in wholeSaleSellingOrdersDto.WholeSaleSellingOrderDetails)
             {
-                var temp = new WholeSaleSellingOrderDetail();
-                temp.Id = orderDetail.Id;
+                var temp = new WholeSaleSellingOrderDetails();
                 temp.Price = orderDetail.Price;
                 temp.Quantity = orderDetail.Quantity;
                 temp.WholeSaleProduct = _wholeSaleProductService.FindById(Guid.Parse(orderDetail.WholeSaleProductId)).Result;
                 temp.WholeSaleSellingOrder = order;
-
+                temp.WholeSaleProductId = temp.WholeSaleProduct.Id;
+                temp.WholeSaleSellingOrderId = temp.WholeSaleSellingOrder.Id;
                 orderDetails.Add(temp);
-                _paginationUow.Complete();
-
             }
 
             order.WholeSaleSellingOrderDetails = orderDetails;
+            order.User = _paginationUow.Service<ApplicationUser>().FindById(order.UserId).Result;
             return order;
         }
 

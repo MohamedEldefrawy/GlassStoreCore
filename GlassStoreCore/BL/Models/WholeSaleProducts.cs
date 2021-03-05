@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GlassStoreCore.BL.Models
 {
-    public class WholeSaleProduct
+    public class WholeSaleProducts
     {
         [Required]
         public Guid Id { get; set; }
@@ -17,6 +17,6 @@ namespace GlassStoreCore.BL.Models
         [Required]
         public int UnitsInStock { get; set; }
 
-        public ICollection<WholeSaleSellingOrderDetail> WholeSaleSellingOrderDetails { get; set; }
+        public ICollection<WholeSaleSellingOrderDetails> WholeSaleSellingOrderDetails { get; set; }
     }
 }

@@ -13,5 +13,6 @@ namespace GlassStoreCore.Services
         public Task<int> Add(TEntity entity);
         public Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> filter);
         public Task<int> UpdateAsync(TEntity entity);
+        public void DetachEntity(TEntity entity);
     }
 }

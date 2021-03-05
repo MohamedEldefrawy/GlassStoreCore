@@ -23,10 +23,10 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpGet]
-        public ActionResult<WholeSaleSellingOrderDetail> GetWholeSaleSellingOrderDetails([FromQuery] PaginationFilter filter)
+        public ActionResult<WholeSaleSellingOrderDetails> GetWholeSaleSellingOrderDetails([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
-            var (orderDetails, totalRecords) = _paginationUow.Service<WholeSaleSellingOrderDetail>()
+            var (orderDetails, totalRecords) = _paginationUow.Service<WholeSaleSellingOrderDetails>()
                                                        .GetAll(filter.PageNumber, filter.PageSize).Result;
 
             if (orderDetails.Count == 0)
@@ -36,7 +36,7 @@ namespace GlassStoreCore.BL.APIs
 
             var odrderDetialsDto = orderDetails
                                    .Select(_mapper.Mapper
-                                                  .Map<WholeSaleSellingOrderDetail, WholeSaleProductsOrderDetailsDto>)
+                                                  .Map<WholeSaleSellingOrderDetails, WholeSaleProductsOrderDetailsDto>)
                                    .ToList();
             var pageResponse =
                 PaginationHelper.CreatePagedResponse(odrderDetialsDto, filter, totalRecords, _paginationUow, route);
