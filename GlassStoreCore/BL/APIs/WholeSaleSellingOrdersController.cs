@@ -237,5 +237,38 @@ namespace GlassStoreCore.BL.APIs
                 StatusMessage = "Selected order has been deleted successfully."
             });
         }
+
+        [HttpDelete]
+        public ActionResult<WholeSaleSellingOrderDetails> DeleteWholeSaleSillingOrderDetail(DeleteWholeSaleSellingOrderDetail orderDetail)
+        {
+            var selectedOd = _wholeSaleSellingOrderDetailsService.FindById(orderDetail.WholeSaleProductId, orderDetail.WholeSaleSellingOrderId).Result;
+
+            if (selectedOd == null)
+            {
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected order detail not found."
+                });
+            }
+
+            var result = _wholeSaleSellingOrderDetailsService.DeleteAsync(selectedOd).Result;
+
+            if (result <= 0)
+            {
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Faild to delete selected order detail."
+                });
+            }
+
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected order detail has been deleted successfully."
+            });
+
+        }
     }
 }
