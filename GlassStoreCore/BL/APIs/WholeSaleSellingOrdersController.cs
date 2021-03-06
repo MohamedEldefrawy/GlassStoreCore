@@ -66,12 +66,18 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpGet]
-        public ActionResult<WholeSaleSellingOrder> GetWholeSaleSellingOrder(string id)
+        public ActionResult<WholeSaleSellingOrder> GetWholeSaleSellingOrder(DeleteWholeSaleSellingOrderDto orderDto)
         {
-            var selectedOrder = _paginationUow.Service<WholeSaleSellingOrder>().FindById(id).Result;
+            var selectedOrder = _wholeSaleSellingOrderService.FindByIdWithRelatedEntites("WholeSaleSellingOrderDetails"
+                , x => x.Id == orderDto.Id).Result;
+
             if (selectedOrder == null)
             {
-                return NotFound("please select a valid order id");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected order not found."
+                });
             }
 
             return Ok(_mapper.Mapper.Map<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>(selectedOrder));
