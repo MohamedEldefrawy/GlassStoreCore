@@ -175,23 +175,46 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpDelete]
-        public ActionResult<WholeSaleSellingOrder> DeleteWholeSaleSellingOrder(string id)
+        public ActionResult<WholeSaleSellingOrder> DeleteWholeSaleSellingOrder(DeleteWholeSaleSellingOrderDto orderDto)
         {
-            var selectedOrder = _paginationUow.Service<WholeSaleSellingOrder>().FindById(id).Result;
+            var selectedOrder = _wholeSaleSellingOrderService.FindByIdWithRelatedEntites("WholeSaleSellingOrderDetails"
+                , x => x.Id == orderDto.Id).Result;
 
             if (selectedOrder == null)
             {
-                return NotFound("Please select a valid Id");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected order not found."
+                });
             }
 
-            var result = _paginationUow.Service<WholeSaleSellingOrder>().DeleteAsync(selectedOrder).Result;
+            selectedOrder.WholeSaleSellingOrderDetails.Clear();
+            if (selectedOrder.WholeSaleSellingOrderDetails.Count != 0)
+            {
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Faild to delete order details."
+                });
+            }
+
+            var result = _wholeSaleSellingOrderService.DeleteAsync(selectedOrder).Result;
 
             if (result == 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't delete selected order."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected order has been deleted successfully."
+            });
         }
     }
 }

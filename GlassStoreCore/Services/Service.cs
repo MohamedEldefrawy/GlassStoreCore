@@ -37,6 +37,13 @@ namespace GlassStoreCore.Services
             return result;
         }
 
+        public async Task<TEntity> FindByIdWithRelatedEntites(string relatedEntityName, Expression<Func<TEntity, bool>> match)
+        {
+            var result = await _context.Set<TEntity>().Include(relatedEntityName).FirstOrDefaultAsync(match);
+
+            return result;
+        }
+
         public async Task<int> Add(TEntity entity)
         {
             await _context.Set<TEntity>().AddAsync(entity);

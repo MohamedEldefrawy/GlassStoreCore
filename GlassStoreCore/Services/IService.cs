@@ -9,6 +9,8 @@ namespace GlassStoreCore.Services
     {
         public Task<(List<TEntity>, int)> GetAll(int pageNumber, int pageSize);
         public Task<TEntity> FindById(params object[] primaryKeys);
+        public Task<TEntity> FindByIdWithRelatedEntites(string relatedEntityName, Expression<Func<TEntity, bool>> match);
+
         public Task<int> DeleteAsync(TEntity entity);
         public Task<int> Add(TEntity entity);
         public Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> filter);
