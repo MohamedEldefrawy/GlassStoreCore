@@ -34,18 +34,33 @@ namespace GlassStoreCore.BL.APIs
         public ActionResult<WholeSaleSellingOrder> GetWholeSaleSellingOrders([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
-            var (orders, totalRecords) = _paginationUow.Service<WholeSaleSellingOrder>()
+            var (orders, totalRecords) = _wholeSaleSellingOrderService
                                                        .GetAll(filter.PageNumber, filter.PageSize).Result;
 
             if (orders.Count == 0)
             {
-                return NotFound("No Orders Available");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "No orders found."
+                });
             }
 
             var ordersDto = orders.Select(_mapper.Mapper.Map<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>)
                                   .ToList();
+
+            var (orderDetailsDto, x) = _wholeSaleSellingOrderDetailsService.GetAll(filter.PageNumber, filter.PageSize).Result;
+            var od = orderDetailsDto.AsQueryable();
+            foreach (var order in ordersDto)
+            {
+
+                order.WholeSaleSellingOrderDetails = od.Where(o => o.WholeSaleSellingOrderId == order.Id).AsEnumerable()
+                    .Select(_mapper.Mapper.Map<WholeSaleSellingOrderDetails, WholeSaleProductsOrderDetailsDto>).ToList();
+            }
             var pageResponse =
                 PaginationHelper.CreatePagedResponse(ordersDto, filter, totalRecords, _paginationUow, route);
+
+            pageResponse.Message = "Orders returned successfully.";
 
             return Ok(pageResponse);
         }
