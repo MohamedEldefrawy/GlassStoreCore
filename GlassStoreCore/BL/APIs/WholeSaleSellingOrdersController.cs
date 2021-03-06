@@ -82,10 +82,18 @@ namespace GlassStoreCore.BL.APIs
 
             if (result <= 0 || odResult <= 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't create the order."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Order has been created successfully."
+            });
         }
 
         private WholeSaleSellingOrder MappingSellingOrder(WholeSaleSellingOrdersDto wholeSaleSellingOrdersDto)
@@ -118,24 +126,52 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpPut]
-        public ActionResult<WholeSaleSellingOrder> UpdateWholeSaleSellingOrder(WholeSaleSellingOrdersDto orderDto, int id)
+        public ActionResult<WholeSaleSellingOrder> UpdateWholeSaleSellingOrder(UpdateWholeSaleSellingOrderDto orderDto)
         {
-            var selectedOrder = _paginationUow.Service<WholeSaleSellingOrder>().FindById(id).Result;
+            var selectedOd = _wholeSaleSellingOrderDetailsService.GetAll(o => o.WholeSaleSellingOrderId == orderDto.Id).Result;
 
-            if (selectedOrder == null)
+            if (selectedOd == null)
             {
-                return NotFound("Please select valid order id");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected Order not found."
+                });
             }
 
-            _mapper.Mapper.Map(orderDto, selectedOrder);
+            selectedOd = new List<WholeSaleSellingOrderDetails>();
 
-            var result = _paginationUow.Service<WholeSaleSellingOrder>().UpdateAsync(selectedOrder).Result;
+            foreach (var order in orderDto.WholeSaleSellingOrderDetails)
+            {
+                selectedOd.Add(new WholeSaleSellingOrderDetails
+                {
+                    Price = order.Price,
+                    Quantity = order.Quantity,
+                    WholeSaleProductId = Guid.Parse(order.WholeSaleProductId),
+                    WholeSaleSellingOrderId = order.WholeSaleSellingOrderId,
+                });
+            }
+
+            int result = 0;
+            foreach (var orderDetail in selectedOd)
+            {
+                result += _wholeSaleSellingOrderDetailsService.UpdateAsync(orderDetail).Result;
+            }
+
             if (result <= 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't update selected order."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected order has been updated successfully."
+            });
         }
 
         [HttpDelete]
