@@ -89,35 +89,38 @@ namespace GlassStoreCore.BL.APIs
         {
 
             var order = MappingSellingOrder(wholeSaleSellingOrdersDto);
-            var od = order.WholeSaleSellingOrderDetails;
+            var orderDetails = order.WholeSaleSellingOrderDetails;
             order.WholeSaleSellingOrderDetails = null;
-            var result = _wholeSaleSellingOrderService.Add(order).Result;
 
-            int odResult = 0;
+            int orderResult = 0;
+            int orderDetailsResult = 0;
 
-            foreach (var orderDetail in od)
+            var (isUnitInStockAvailable, productName) = IsUnitInStockAvailable(orderDetails.ToList());
+
+            if (!isUnitInStockAvailable)
+            {
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = string.Format("The {0} is out of stock.", productName)
+                });
+            }
+
+            orderResult += _wholeSaleSellingOrderService.Add(order).Result;
+
+
+            foreach (var orderDetail in orderDetails)
             {
                 var product = _wholeSaleProductService.FindById(orderDetail.WholeSaleProductId).Result;
 
-                if (product.UnitsInStock < orderDetail.Quantity)
-                {
-                    _wholeSaleSellingOrderService.DeleteAsync(order);
-                    return BadRequest(new JsonResults
-                    {
-                        StatusCode = 400,
-                        StatusMessage = "The Product is out of stock."
-                    });
-                }
-
                 product.UnitsInStock -= orderDetail.Quantity;
                 _wholeSaleProductService.UpdateAsync(product);
-                odResult += _wholeSaleSellingOrderDetailsService.Add(orderDetail).Result;
                 _wholeSaleProductService.DetachEntity(product);
+                orderDetailsResult += _wholeSaleSellingOrderDetailsService.Add(orderDetail).Result;
                 _wholeSaleSellingOrderDetailsService.DetachEntity(orderDetail);
             }
 
-
-            if (result <= 0 || odResult <= 0)
+            if (orderDetailsResult <= 0 || orderResult <= 0)
             {
                 return BadRequest(new JsonResults
                 {
@@ -160,6 +163,21 @@ namespace GlassStoreCore.BL.APIs
             order.WholeSaleSellingOrderDetails = orderDetails;
             order.User = _paginationUow.Service<ApplicationUser>().FindById(order.UserId).Result;
             return order;
+        }
+
+        private (bool, string) IsUnitInStockAvailable(List<WholeSaleSellingOrderDetails> od)
+        {
+            foreach (var orderDetail in od)
+            {
+                var product = _wholeSaleProductService.FindById(orderDetail.WholeSaleProductId).Result;
+
+                if (product.UnitsInStock < orderDetail.Quantity)
+                {
+                    return (false, product.Name);
+                }
+            }
+
+            return (true, "");
         }
 
         [HttpPut]
