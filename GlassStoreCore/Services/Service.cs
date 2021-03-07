@@ -40,7 +40,7 @@ namespace GlassStoreCore.Services
         public async Task<TEntity> FindByIdWithRelatedEntites(string relatedEntityName, Expression<Func<TEntity, bool>> match)
         {
             var result = await _context.Set<TEntity>().Include(relatedEntityName).FirstOrDefaultAsync(match);
-
+            _context.Entry(result).State = EntityState.Unchanged;
             return result;
         }
 

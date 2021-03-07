@@ -94,10 +94,26 @@ namespace GlassStoreCore.BL.APIs
             var result = _wholeSaleSellingOrderService.Add(order).Result;
 
             int odResult = 0;
+
             foreach (var orderDetail in od)
             {
-                odResult += _wholeSaleSellingOrderDetailsService.Add(orderDetail).Result;
+                var product = _wholeSaleProductService.FindById(orderDetail.WholeSaleProductId).Result;
 
+                if (product.UnitsInStock < orderDetail.Quantity)
+                {
+                    _wholeSaleSellingOrderService.DeleteAsync(order);
+                    return BadRequest(new JsonResults
+                    {
+                        StatusCode = 400,
+                        StatusMessage = "The Product is out of stock."
+                    });
+                }
+
+                product.UnitsInStock -= orderDetail.Quantity;
+                _wholeSaleProductService.UpdateAsync(product);
+                odResult += _wholeSaleSellingOrderDetailsService.Add(orderDetail).Result;
+                _wholeSaleProductService.DetachEntity(product);
+                _wholeSaleSellingOrderDetailsService.DetachEntity(orderDetail);
             }
 
 
