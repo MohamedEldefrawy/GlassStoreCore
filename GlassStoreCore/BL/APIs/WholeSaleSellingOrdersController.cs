@@ -115,9 +115,7 @@ namespace GlassStoreCore.BL.APIs
 
                 product.UnitsInStock -= orderDetail.Quantity;
                 _wholeSaleProductService.UpdateAsync(product);
-                _wholeSaleProductService.DetachEntity(product);
                 orderDetailsResult += _wholeSaleSellingOrderDetailsService.Add(orderDetail).Result;
-                _wholeSaleSellingOrderDetailsService.DetachEntity(orderDetail);
             }
 
             if (orderDetailsResult <= 0 || orderResult <= 0)
@@ -162,6 +160,7 @@ namespace GlassStoreCore.BL.APIs
 
             order.WholeSaleSellingOrderDetails = orderDetails;
             order.User = _paginationUow.Service<ApplicationUser>().FindById(order.UserId).Result;
+            _paginationUow.Complete();
             return order;
         }
 
