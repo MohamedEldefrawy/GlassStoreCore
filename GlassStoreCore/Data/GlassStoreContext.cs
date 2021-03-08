@@ -36,13 +36,17 @@ namespace GlassStoreCore.Data
 
             modelBuilder.Entity<WholeSaleSellingOrderDetails>()
                 .HasOne(o => o.WholeSaleSellingOrder)
-                .WithMany(od => od.WholeSaleSellingOrderDetails)
-                .HasForeignKey(o => o.WholeSaleSellingOrderId);
+                .WithMany(od => od.WholeSaleSellingOrderDetails);
 
             modelBuilder.Entity<WholeSaleSellingOrderDetails>()
                 .HasOne(p => p.WholeSaleProduct)
-                .WithMany(od => od.WholeSaleSellingOrderDetails)
-                .HasForeignKey(p => p.WholeSaleProductId);
+                .WithMany(od => od.WholeSaleSellingOrderDetails);
+
+            modelBuilder.Entity<WholeSaleSellingOrderDetails>().HasKey(p => new
+            {
+                p.WholeSaleSellingOrderId,
+                p.WholeSaleProductId
+            });
         }
     }
 }

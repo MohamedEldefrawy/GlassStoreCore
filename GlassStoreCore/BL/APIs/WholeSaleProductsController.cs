@@ -28,7 +28,7 @@ namespace GlassStoreCore.BL.APIs
         {
             var route = Request.Path.Value;
             var (products, totalRecords) =
-                _paginationUow.Service<WholeSaleProducts>().GetAll(filter.PageNumber, filter.PageSize).Result;
+                _paginationUow.Service<WholeSaleProducts>().GetAllAsync(filter.PageNumber, filter.PageSize).Result;
 
             if (products.Count == 0)
             {
@@ -50,7 +50,7 @@ namespace GlassStoreCore.BL.APIs
         {
             Guid.TryParse(id, out var guid);
 
-            var product = _paginationUow.Service<WholeSaleProducts>().FindById(guid).Result;
+            var product = _paginationUow.Service<WholeSaleProducts>().FindByIdAsync(guid).Result;
 
             if (product == null)
             {
@@ -69,7 +69,7 @@ namespace GlassStoreCore.BL.APIs
         {
             var product = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProducts>(wholeSaleProductsDto);
             var result
-            = _paginationUow.Service<WholeSaleProducts>().Add(product);
+            = _paginationUow.Service<WholeSaleProducts>().AddAsync(product);
 
             if (result.Result <= 0)
             {
@@ -115,7 +115,7 @@ namespace GlassStoreCore.BL.APIs
         {
             Guid.TryParse(id, out var guid);
             var wholeSaleProductService = _paginationUow.Service<WholeSaleProducts>();
-            var selectedProduct = wholeSaleProductService.FindById(guid).Result;
+            var selectedProduct = wholeSaleProductService.FindByIdAsync(guid).Result;
             if (selectedProduct == null)
             {
                 return NotFound(new JsonResults

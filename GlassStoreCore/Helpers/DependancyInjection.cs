@@ -17,11 +17,11 @@ namespace GlassStoreCore.Helpers
     {
         public static IServiceCollection AddDependency(this IServiceCollection services)
         {
-            services.AddScoped<ObjectMapper>();
-            services.AddScoped<IUsersService, UsersService>();
-            services.AddScoped<IRolesService, RolesService>();
-            services.AddScoped<IUsersRolesService, UsersRolesService>();
-            services.AddScoped<IWholeSaleProductsService, WholeSaleProductsService>();
+            services.AddTransient<ObjectMapper>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IRolesService, RolesService>();
+            services.AddTransient<IUsersRolesService, UsersRolesService>();
+            services.AddTransient<IWholeSaleProductsService, WholeSaleProductsService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IPaginationUow, PaginationUow>();
             services.AddTransient<IValidator<CreateUserDto>, UsersValidator>();

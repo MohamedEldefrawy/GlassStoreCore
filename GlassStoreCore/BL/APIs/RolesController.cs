@@ -29,7 +29,7 @@ namespace GlassStoreCore.BL.APIs
         public ActionResult<IdentityRole> GetRoles([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
-            var (roles, totalRecords) = _rolesService.GetAll(filter.PageNumber, filter.PageSize).Result;
+            var (roles, totalRecords) = _rolesService.GetAllAsync(filter.PageNumber, filter.PageSize).Result;
 
             if (roles == null)
             {
@@ -49,7 +49,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet("{id}")]
         public ActionResult<IdentityRole> GetRole(string id)
         {
-            var role = _rolesService.FindById(id).Result;
+            var role = _rolesService.FindByIdAsync(id).Result;
 
             if (role == null)
             {
@@ -67,7 +67,7 @@ namespace GlassStoreCore.BL.APIs
         public ActionResult<IdentityRole> CreateRole(RoleDto roleDto)
         {
             var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
-            var result = _rolesService.Add(role);
+            var result = _rolesService.AddAsync(role);
 
             if (result.Result <= 0)
             {
@@ -88,7 +88,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpPut("{id}")]
         public ActionResult<IdentityRole> UpdateRole(UpdateRoleDto roleDto, string id)
         {
-            var role = _rolesService.FindById(id).Result;
+            var role = _rolesService.FindByIdAsync(id).Result;
 
             if (role == null)
             {
@@ -123,7 +123,7 @@ namespace GlassStoreCore.BL.APIs
         public ActionResult<IdentityRole> DeleteRole(string id)
         {
             var roleService = _rolesService;
-            var selectedRole = roleService.FindById(id).Result;
+            var selectedRole = roleService.FindByIdAsync(id).Result;
             if (selectedRole == null)
             {
                 return NotFound(new JsonResults

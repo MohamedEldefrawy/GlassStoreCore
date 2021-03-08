@@ -1,4 +1,3 @@
-using GlassStoreCore.BL;
 using GlassStoreCore.BL.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -38,7 +37,7 @@ namespace GlassStoreCore
             services.AddDependency();
             services.AddDbContext<GlassStoreContext>(options =>
                                                          options.UseSqlServer(
-                                                                              Configuration.GetConnectionString("MyConn")));
+                                                                              Configuration.GetConnectionString("MyConn")), ServiceLifetime.Transient);
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<GlassStoreContext>();
@@ -46,7 +45,7 @@ namespace GlassStoreCore
             services.AddIdentityServer()
                 .AddApiAuthorization<ApplicationUser, GlassStoreContext>();
 
-
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
@@ -82,7 +81,7 @@ namespace GlassStoreCore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {
