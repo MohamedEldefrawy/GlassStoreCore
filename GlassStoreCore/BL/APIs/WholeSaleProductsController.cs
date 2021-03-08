@@ -32,11 +32,16 @@ namespace GlassStoreCore.BL.APIs
 
             if (products.Count == 0)
             {
-                return NotFound("No Products Available");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected Wholesale product not found."
+                });
             }
 
             var productsDto = products.Select(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>).ToList();
             var pageResponse = PaginationHelper.CreatePagedResponse(productsDto, filter, totalRecords, _paginationUow, route);
+            pageResponse.Message = "request has been completed successfully";
             return Ok(pageResponse);
         }
 

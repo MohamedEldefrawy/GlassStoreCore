@@ -24,8 +24,6 @@ namespace GlassStoreCore.BL.APIs
             _paginationUow = paginationUow;
             _mapper = mapper;
             _usersRolesService = _paginationUow.Service<IdentityUserRole<string>>();
-
-
         }
 
         [HttpGet]
@@ -36,11 +34,15 @@ namespace GlassStoreCore.BL.APIs
 
             if (userRoles == null)
             {
-                return NotFound();
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected user's role not found."
+                });
             }
 
             var pageResponse = PaginationHelper.CreatePagedResponse(userRoles, filter, totalRecords, _paginationUow, route);
-
+            pageResponse.Message = "Request has been completed successfully.";
             return Ok(pageResponse);
         }
 
@@ -51,7 +53,11 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedUserRoles == null)
             {
-                return NotFound("Please enter a valid id");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected user's role not found."
+                });
             }
             return Ok(selectedUserRoles);
         }
@@ -64,7 +70,11 @@ namespace GlassStoreCore.BL.APIs
 
             if (result.Result <= 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't create user's role."
+                });
             }
 
             return Ok();
@@ -87,10 +97,18 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't update selected user's role."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "User's role has been updated successfully."
+            });
         }
 
         [HttpDelete("{userId}/{roleId}")]
@@ -100,17 +118,29 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedUserRoles == null)
             {
-                return NotFound("Please Enter a valid userId and roleId");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected user's role not found."
+                });
             }
 
             var result = _usersRolesService.DeleteAsync(selectedUserRoles).Result;
 
             if (result == 0)
             {
-                return BadRequest("something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't Delete selected user's role."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 404,
+                StatusMessage = "Selected user's role has been deleted successfully."
+            });
         }
 
     }

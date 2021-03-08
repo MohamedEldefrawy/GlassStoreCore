@@ -33,12 +33,16 @@ namespace GlassStoreCore.BL.APIs
 
             if (roles == null)
             {
-                return NotFound();
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "No roles found."
+                });
             }
 
             var rolesDtos = roles.Select(_mapper.Mapper.Map<IdentityRole, RoleDto>).ToList();
             var pageResponse = PaginationHelper.CreatePagedResponse(rolesDtos, filter, totalRecords, _paginationUow, route);
-
+            pageResponse.Message = "request has completed successfully.";
             return Ok(pageResponse);
         }
 
@@ -49,7 +53,11 @@ namespace GlassStoreCore.BL.APIs
 
             if (role == null)
             {
-                return NotFound();
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected role not found."
+                });
             }
 
             return Ok(_mapper.Mapper.Map<IdentityRole, RoleDto>(role));
@@ -63,10 +71,18 @@ namespace GlassStoreCore.BL.APIs
 
             if (result.Result <= 0)
             {
-                return BadRequest("Something wrong!");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't create role."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Role has been created successfully."
+            });
         }
 
         [HttpPut("{id}")]
@@ -76,7 +92,11 @@ namespace GlassStoreCore.BL.APIs
 
             if (role == null)
             {
-                return NotFound("Cannot find the selected role id");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected role not found."
+                });
             }
 
             _mapper.Mapper.Map(roleDto, role);
@@ -85,10 +105,18 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't update selected role."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Selected user not found."
+            });
         }
 
         [HttpDelete("{id}")]
@@ -98,16 +126,28 @@ namespace GlassStoreCore.BL.APIs
             var selectedRole = roleService.FindById(id).Result;
             if (selectedRole == null)
             {
-                return NotFound("please select a valid role");
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "Selected role not found."
+                });
             }
 
             var result = roleService.DeleteAsync(selectedRole).Result;
             if (result == 0)
             {
-                return BadRequest("Something wrong");
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Couldn't delete selected role."
+                });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "Role has been deleted successfully."
+            });
         }
     }
 }
