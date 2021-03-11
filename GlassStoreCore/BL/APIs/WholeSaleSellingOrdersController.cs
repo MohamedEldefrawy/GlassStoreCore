@@ -189,23 +189,32 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            selectedOd = new List<WholeSaleSellingOrderDetails>();
+            var newOd = new List<WholeSaleSellingOrderDetails>();
 
-            foreach (var order in orderDto.WholeSaleSellingOrderDetails)
+            for (int i = 0; i < selectedOd.Count; i++)
             {
-                selectedOd.Add(new WholeSaleSellingOrderDetails
+                newOd.Add(new WholeSaleSellingOrderDetails
                 {
-                    Price = order.Price,
-                    Quantity = order.Quantity,
-                    WholeSaleProductId = Guid.Parse(order.WholeSaleProductId),
-                    WholeSaleSellingOrderId = order.WholeSaleSellingOrderId,
+                    Price = orderDto.WholeSaleSellingOrderDetails.ToList()[i].Price,
+                    Quantity = orderDto.WholeSaleSellingOrderDetails.ToList()[i].Quantity,
+                    WholeSaleProductId = Guid.Parse(orderDto.WholeSaleSellingOrderDetails.ToList()[i].WholeSaleProductId),
+                    WholeSaleSellingOrderId = orderDto.WholeSaleSellingOrderDetails.ToList()[i].WholeSaleSellingOrderId,
                 });
+
+                var products = _wholeSaleProductService.FindById(Guid.Parse(orderDto.WholeSaleSellingOrderDetails.ToList()[i].WholeSaleProductId));
+                products.UnitsInStock += selectedOd[i].Quantity;
+                _wholeSaleProductService.Update(products);
+
             }
 
             int result = 0;
-            foreach (var orderDetail in selectedOd)
+            foreach (var orderDetail in newOd)
             {
                 result += _wholeSaleSellingOrderDetailsService.Update(orderDetail);
+
+                var products = _wholeSaleProductService.FindById(orderDetail.WholeSaleProductId);
+                products.UnitsInStock -= orderDetail.Quantity;
+                _wholeSaleProductService.Update(products);
             }
 
             if (result <= 0)
