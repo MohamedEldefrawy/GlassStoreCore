@@ -248,7 +248,11 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
+            ReturnProductsToStock(selectedOrder.WholeSaleSellingOrderDetails);
+
             selectedOrder.WholeSaleSellingOrderDetails.Clear();
+
+
             if (selectedOrder.WholeSaleSellingOrderDetails.Count != 0)
             {
                 return BadRequest(new JsonResults
@@ -276,10 +280,19 @@ namespace GlassStoreCore.BL.APIs
             });
         }
 
+        private void ReturnProductsToStock(ICollection<WholeSaleSellingOrderDetails> orderDetails)
+        {
+            foreach (var orderDetail in orderDetails)
+            {
+                var product = _wholeSaleProductService.FindById(orderDetail.WholeSaleProductId);
+                product.UnitsInStock += orderDetail.Quantity;
+            }
+        }
+
         [HttpDelete]
         public ActionResult<WholeSaleSellingOrderDetails> DeleteWholeSaleSillingOrderDetail(DeleteWholeSaleSellingOrderDetail orderDetail)
         {
-            var selectedOd = _wholeSaleSellingOrderDetailsService.FindById(orderDetail.WholeSaleProductId, orderDetail.WholeSaleSellingOrderId);
+            var selectedOd = _wholeSaleSellingOrderDetailsService.GetAll(p => p.WholeSaleProductId == orderDetail.WholeSaleProductId && p.WholeSaleSellingOrderId == orderDetail.WholeSaleSellingOrderId);
 
             if (selectedOd == null)
             {
@@ -290,7 +303,9 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var result = _wholeSaleSellingOrderDetailsService.Delete(selectedOd);
+            ReturnProductsToStock(selectedOd);
+
+            var result = _wholeSaleSellingOrderDetailsService.Delete(selectedOd.SingleOrDefault());
 
             if (result <= 0)
             {

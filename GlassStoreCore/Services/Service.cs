@@ -44,6 +44,12 @@ namespace GlassStoreCore.Services
         public TEntity FindByIdWithRelatedEntites(string relatedEntityName, Expression<Func<TEntity, bool>> match)
         {
             var result = _context.Set<TEntity>().Include(relatedEntityName).FirstOrDefault(match);
+
+            if (result == null)
+            {
+                return null;
+            }
+
             _context.Entry(result).State = EntityState.Unchanged;
             return result;
         }
