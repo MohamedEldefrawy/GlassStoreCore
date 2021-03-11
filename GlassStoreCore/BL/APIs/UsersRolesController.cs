@@ -30,7 +30,7 @@ namespace GlassStoreCore.BL.APIs
         public ActionResult<IdentityUserRole<string>> GetUsersRoles([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
-            var (userRoles, totalRecords) = _usersRolesService.GetAllAsync(filter.PageNumber, filter.PageSize).Result;
+            var (userRoles, totalRecords) = _usersRolesService.GetAll(filter.PageNumber, filter.PageSize);
 
             if (userRoles == null)
             {
@@ -49,7 +49,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet("{userId}")]
         public ActionResult<IdentityUserRole<string>> GetUserRoles(string userId)
         {
-            var selectedUserRoles = _usersRolesService.GetAllAsync(u => u.UserId == userId).Result;
+            var selectedUserRoles = _usersRolesService.GetAll(u => u.UserId == userId);
 
             if (selectedUserRoles == null)
             {
@@ -66,9 +66,9 @@ namespace GlassStoreCore.BL.APIs
         public ActionResult<IdentityUserRole<string>> CreateUserRole(UserRoleDto userRoleDto)
         {
             var result = _usersRolesService
-                                  .AddAsync(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto));
+                                  .Add(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(userRoleDto));
 
-            if (result.Result <= 0)
+            if (result <= 0)
             {
                 return BadRequest(new JsonResults
                 {
@@ -77,22 +77,26 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            return Ok();
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "User's Role has been created successfully."
+            });
         }
 
         [HttpPut("{userId}")]
         public ActionResult<IdentityUserRole<string>> UpdateUserRoles(List<UserRoleDto> userRolesDto, string userId)
         {
-            var userRole = _usersRolesService.GetAllAsync(u => u.UserId == userId).Result;
+            var userRole = _usersRolesService.GetAll(u => u.UserId == userId);
             foreach (var role in userRole)
             {
-                _usersRolesService.DeleteAsync(role);
+                _usersRolesService.Delete(role);
             }
 
             var result = 0;
             foreach (var role in userRolesDto)
             {
-                result = _usersRolesService.AddAsync(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role)).Result;
+                result = _usersRolesService.Add(_mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role));
             }
 
             if (result == 0)
@@ -114,7 +118,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpDelete("{userId}/{roleId}")]
         public ActionResult<IdentityUserRole<string>> DeleteUserRole(string userId, string roleId)
         {
-            var selectedUserRoles = _usersRolesService.GetAllAsync(u => u.UserId == userId && u.RoleId == roleId).Result.SingleOrDefault();
+            var selectedUserRoles = _usersRolesService.GetAll(u => u.UserId == userId && u.RoleId == roleId).SingleOrDefault();
 
             if (selectedUserRoles == null)
             {
@@ -125,7 +129,7 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var result = _usersRolesService.DeleteAsync(selectedUserRoles).Result;
+            var result = _usersRolesService.Delete(selectedUserRoles);
 
             if (result == 0)
             {
@@ -138,10 +142,9 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 404,
-                StatusMessage = "Selected user's role has been deleted successfully."
+                StatusCode = 200,
+                StatusMessage = "selected user's role has been deleted successfully."
             });
         }
-
     }
 }
