@@ -84,6 +84,11 @@ namespace GlassStoreCore.Services
         public TEntity FindById(params object[] primaryKeys)
         {
             var result = _context.Set<TEntity>().Find(primaryKeys);
+
+            if (result == null)
+            {
+                return null;
+            }
             _context.Entry(result).State = EntityState.Unchanged;
             return result;
         }
