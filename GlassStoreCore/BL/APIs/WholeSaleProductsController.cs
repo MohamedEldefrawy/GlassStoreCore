@@ -28,7 +28,7 @@ namespace GlassStoreCore.BL.APIs
         {
             var route = Request.Path.Value;
             var (products, totalRecords) =
-                _paginationUow.Service<WholeSaleProducts>().GetAllAsync(filter.PageNumber, filter.PageSize).Result;
+                _paginationUow.Service<WholeSaleProducts>().GetAll(filter.PageNumber, filter.PageSize);
 
             if (products.Count == 0)
             {
@@ -50,7 +50,7 @@ namespace GlassStoreCore.BL.APIs
         {
             Guid.TryParse(id, out var guid);
 
-            var product = _paginationUow.Service<WholeSaleProducts>().FindByIdAsync(guid).Result;
+            var product = _paginationUow.Service<WholeSaleProducts>().FindById(guid);
 
             if (product == null)
             {
@@ -69,9 +69,9 @@ namespace GlassStoreCore.BL.APIs
         {
             var product = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProducts>(wholeSaleProductsDto);
             var result
-            = _paginationUow.Service<WholeSaleProducts>().AddAsync(product);
+            = _paginationUow.Service<WholeSaleProducts>().Add(product);
 
-            if (result.Result <= 0)
+            if (result <= 0)
             {
                 return BadRequest(new JsonResults
                 {
@@ -92,9 +92,9 @@ namespace GlassStoreCore.BL.APIs
         {
             var selectedProduct = _mapper.Mapper.Map<WholeSaleProductsDto, WholeSaleProducts>(wholeSaleProductsDto);
             selectedProduct.Id = id;
-            var result = _paginationUow.Service<WholeSaleProducts>().UpdateAsync(selectedProduct);
+            var result = _paginationUow.Service<WholeSaleProducts>().Update(selectedProduct);
 
-            if (result.Result <= 0)
+            if (result <= 0)
             {
                 return BadRequest(new JsonResults
                 {
@@ -115,7 +115,7 @@ namespace GlassStoreCore.BL.APIs
         {
             Guid.TryParse(id, out var guid);
             var wholeSaleProductService = _paginationUow.Service<WholeSaleProducts>();
-            var selectedProduct = wholeSaleProductService.FindByIdAsync(guid).Result;
+            var selectedProduct = wholeSaleProductService.FindById(guid);
             if (selectedProduct == null)
             {
                 return NotFound(new JsonResults
@@ -125,9 +125,9 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var result = wholeSaleProductService.DeleteAsync(selectedProduct);
+            var result = wholeSaleProductService.Delete(selectedProduct);
 
-            if (result.Result <= 0)
+            if (result <= 0)
             {
                 return BadRequest(new JsonResults
                 {
