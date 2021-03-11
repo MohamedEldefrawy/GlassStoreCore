@@ -174,6 +174,20 @@ namespace GlassStoreCore.BL.APIs
             _mapper.Mapper.Map(userDto, user);
             user.Id = id;
 
+            var userRoles = _userRolesService.GetAll(u => u.UserId == userDto.Id);
+
+            foreach (var userRole in userRoles)
+            {
+                _userRolesService.Delete(userRole);
+            }
+
+            foreach (var role in userDto.Roles)
+            {
+                var updatedUserRole = _mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role);
+                updatedUserRole.UserId = userDto.Id;
+                _userRolesService.Add(updatedUserRole);
+            }
+
             var result = _usersService.Update(user);
 
             if (result == 0)
