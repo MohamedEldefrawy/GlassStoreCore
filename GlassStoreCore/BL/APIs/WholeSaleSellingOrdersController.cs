@@ -35,7 +35,7 @@ namespace GlassStoreCore.BL.APIs
         {
             var route = Request.Path.Value;
             var (orders, totalRecords) = _wholeSaleSellingOrderService
-                                                       .GetAllAsync(filter.PageNumber, filter.PageSize).Result;
+                                                       .GetAll(filter.PageNumber, filter.PageSize);
 
             if (orders.Count == 0)
             {
@@ -49,7 +49,7 @@ namespace GlassStoreCore.BL.APIs
             var ordersDto = orders.Select(_mapper.Mapper.Map<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>)
                                   .ToList();
 
-            var (orderDetailsDto, x) = _wholeSaleSellingOrderDetailsService.GetAllAsync(filter.PageNumber, filter.PageSize).Result;
+            var (orderDetailsDto, x) = _wholeSaleSellingOrderDetailsService.GetAll(filter.PageNumber, filter.PageSize);
             var od = orderDetailsDto.AsQueryable();
             foreach (var order in ordersDto)
             {
@@ -68,8 +68,8 @@ namespace GlassStoreCore.BL.APIs
         [HttpGet]
         public ActionResult<WholeSaleSellingOrder> GetWholeSaleSellingOrder(DeleteWholeSaleSellingOrderDto orderDto)
         {
-            var selectedOrder = _wholeSaleSellingOrderService.FindByIdWithRelatedEntitesAsync("WholeSaleSellingOrderDetails"
-                , x => x.Id == orderDto.Id).Result;
+            var selectedOrder = _wholeSaleSellingOrderService.FindByIdWithRelatedEntites("WholeSaleSellingOrderDetails"
+                , x => x.Id == orderDto.Id);
 
             if (selectedOrder == null)
             {
@@ -149,8 +149,6 @@ namespace GlassStoreCore.BL.APIs
                 var temp = new WholeSaleSellingOrderDetails();
                 temp.Price = orderDetail.Price;
                 temp.Quantity = orderDetail.Quantity;
-                //temp.WholeSaleProduct = _wholeSaleProductService.FindById(Guid.Parse(orderDetail.WholeSaleProductId)).Result;
-                //temp.WholeSaleSellingOrder = order;
                 temp.WholeSaleProductId = Guid.Parse(orderDetail.WholeSaleProductId);
                 temp.WholeSaleSellingOrderId = orderDetail.WholeSaleSellingOrderId;
                 orderDetails.Add(temp);
@@ -166,7 +164,7 @@ namespace GlassStoreCore.BL.APIs
         {
             foreach (var orderDetail in od)
             {
-                var product = _wholeSaleProductService.FindByIdAsync(orderDetail.WholeSaleProductId).Result;
+                var product = _wholeSaleProductService.FindById(orderDetail.WholeSaleProductId);
 
                 if (product.UnitsInStock < orderDetail.Quantity)
                 {
@@ -180,7 +178,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpPut]
         public ActionResult<WholeSaleSellingOrder> UpdateWholeSaleSellingOrder(UpdateWholeSaleSellingOrderDto orderDto)
         {
-            var selectedOd = _wholeSaleSellingOrderDetailsService.GetAllAsync(o => o.WholeSaleSellingOrderId == orderDto.Id).Result;
+            var selectedOd = _wholeSaleSellingOrderDetailsService.GetAll(o => o.WholeSaleSellingOrderId == orderDto.Id);
 
             if (selectedOd == null)
             {
@@ -207,7 +205,7 @@ namespace GlassStoreCore.BL.APIs
             int result = 0;
             foreach (var orderDetail in selectedOd)
             {
-                result += _wholeSaleSellingOrderDetailsService.UpdateAsync(orderDetail).Result;
+                result += _wholeSaleSellingOrderDetailsService.Update(orderDetail);
             }
 
             if (result <= 0)
@@ -229,8 +227,8 @@ namespace GlassStoreCore.BL.APIs
         [HttpDelete]
         public ActionResult<WholeSaleSellingOrder> DeleteWholeSaleSellingOrder(DeleteWholeSaleSellingOrderDto orderDto)
         {
-            var selectedOrder = _wholeSaleSellingOrderService.FindByIdWithRelatedEntitesAsync("WholeSaleSellingOrderDetails"
-                , x => x.Id == orderDto.Id).Result;
+            var selectedOrder = _wholeSaleSellingOrderService.FindByIdWithRelatedEntites("WholeSaleSellingOrderDetails"
+                , x => x.Id == orderDto.Id);
 
             if (selectedOrder == null)
             {
@@ -251,7 +249,7 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var result = _wholeSaleSellingOrderService.DeleteAsync(selectedOrder).Result;
+            var result = _wholeSaleSellingOrderService.Delete(selectedOrder);
 
             if (result == 0)
             {
@@ -272,7 +270,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpDelete]
         public ActionResult<WholeSaleSellingOrderDetails> DeleteWholeSaleSillingOrderDetail(DeleteWholeSaleSellingOrderDetail orderDetail)
         {
-            var selectedOd = _wholeSaleSellingOrderDetailsService.FindByIdAsync(orderDetail.WholeSaleProductId, orderDetail.WholeSaleSellingOrderId).Result;
+            var selectedOd = _wholeSaleSellingOrderDetailsService.FindById(orderDetail.WholeSaleProductId, orderDetail.WholeSaleSellingOrderId);
 
             if (selectedOd == null)
             {
@@ -283,7 +281,7 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var result = _wholeSaleSellingOrderDetailsService.DeleteAsync(selectedOd).Result;
+            var result = _wholeSaleSellingOrderDetailsService.Delete(selectedOd);
 
             if (result <= 0)
             {
@@ -299,7 +297,6 @@ namespace GlassStoreCore.BL.APIs
                 StatusCode = 200,
                 StatusMessage = "Selected order detail has been deleted successfully."
             });
-
         }
     }
 }
