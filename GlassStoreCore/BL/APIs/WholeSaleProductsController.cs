@@ -64,6 +64,24 @@ namespace GlassStoreCore.BL.APIs
             return Ok(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>(product));
         }
 
+        [HttpGet]
+        public ActionResult<WholeSaleProducts> GetWholeSaleProductsBySerial(WholeSaleProductSerialDto serial)
+        {
+            var products = _paginationUow.Service<WholeSaleProducts>().GetAll(p => p.SerialNumber.Contains(serial.SerialNumber)).ToList();
+
+            if (products == null)
+            {
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "No products found."
+                });
+            }
+
+            return Ok(products.Select(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>));
+
+        }
+
         [HttpPost]
         public ActionResult<WholeSaleProducts> CreateWholeSaleProduct(WholeSaleProductsDto wholeSaleProductsDto)
         {
@@ -142,5 +160,6 @@ namespace GlassStoreCore.BL.APIs
                 StatusMessage = "Selected product has been deleted succesfully."
             });
         }
+
     }
 }
