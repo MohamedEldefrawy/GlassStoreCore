@@ -204,5 +204,31 @@ namespace GlassStoreCore.BL.APIs
                 StatusMessage = "Selected user has been updated successfully."
             });
         }
+
+        [HttpGet]
+        public ActionResult<ApplicationUser> FindUserByName(UserNameDto nameDto)
+        {
+            if (nameDto is null)
+            {
+                return BadRequest(new JsonResults
+                {
+                    StatusCode = 400,
+                    StatusMessage = "Faild to find user."
+                });
+            }
+
+            var users = _usersService.GetAll(u => u.UserName.Contains(nameDto.Name)).ToList();
+
+            if (users == null)
+            {
+                return NotFound(new JsonResults
+                {
+                    StatusCode = 404,
+                    StatusMessage = "No users found."
+                });
+            }
+
+            return Ok(users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>));
+        }
     }
 }
