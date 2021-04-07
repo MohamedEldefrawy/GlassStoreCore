@@ -65,9 +65,9 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpGet]
-        public ActionResult<WholeSaleProducts> GetWholeSaleProductsBySerial(WholeSaleProductSerialDto serial)
+        public ActionResult<WholeSaleProducts> GetWholeSaleProductsBySerial([FromQuery] string serial)
         {
-            var products = _paginationUow.Service<WholeSaleProducts>().GetAll(p => p.SerialNumber.Contains(serial.SerialNumber)).ToList();
+            var products = _paginationUow.Service<WholeSaleProducts>().GetAll(p => p.SerialNumber.Contains(serial)).ToList();
 
             if (products == null)
             {
