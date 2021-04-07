@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs.UsersDtos;
 using GlassStoreCore.BL.Models;
@@ -11,12 +13,54 @@ namespace GlassStoreCore.Services.UserService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ObjectMapper _mapper = new ObjectMapper();
+        private readonly GlassStoreContext _context;
 
         public UsersService(GlassStoreContext context, UserManager<ApplicationUser> userManager)
             : base(context)
         {
             _userManager = userManager;
+            _context = context;
         }
+
+        public ApplicationUser Authenticate(string username, string password)
+        {
+            var PasswordHasher = new PasswordHasher<ApplicationUser>();
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                return null;
+
+            var user = _context.Users.SingleOrDefault(x => x.UserName == username);
+
+            // check if username exists
+            if (user == null)
+                return null;
+
+            // check if password is correct
+            if (PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password) == PasswordVerificationResult.Failed)
+                return null;
+
+            // authentication successful
+            return user;
+
+        }
+
+        //private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        //{
+        //    if (password == null) throw new ArgumentNullException("password");
+        //    if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+        //    if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
+        //    if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
+
+        //    using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
+        //    {
+        //        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //        for (int i = 0; i < computedHash.Length; i++)
+        //        {
+        //            if (computedHash[i] != storedHash[i]) return false;
+        //        }
+        //    }
+
+        //    return true;
+        //}
 
         public async Task<ApplicationUser> CreateUser(CreateUserDto user)
         {

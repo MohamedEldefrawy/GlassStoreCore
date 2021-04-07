@@ -7,5 +7,6 @@ namespace GlassStoreCore.Services.UserService
     public interface IUsersService : IService<ApplicationUser>
     {
         public Task<ApplicationUser> CreateUser(CreateUserDto user);
+        public ApplicationUser Authenticate(string username, string password);
     }
 }
