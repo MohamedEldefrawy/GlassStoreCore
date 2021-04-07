@@ -42,7 +42,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Couldn't Find users.",
-                    Status = false
+                    Success = false
                 });
             }
 
@@ -77,7 +77,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Wrong UserName or password.",
-                    Status = false,
+                    Success = false,
                 });
             }
             return Ok(result);
@@ -94,7 +94,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Selected user not found.",
-                    Status = false
+                    Success = false
                 });
             }
 
@@ -125,7 +125,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Selected user not found.",
-                    Status = false
+                    Success = false
                 });
             }
 
@@ -137,7 +137,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 400,
                     StatusMessage = "Faild to Delete selected user.",
-                    Status = false
+                    Success = false
                 });
             }
 
@@ -145,7 +145,7 @@ namespace GlassStoreCore.BL.APIs
             {
                 StatusCode = 200,
                 StatusMessage = "Selected user has been deleted succesfully.",
-                Status = true
+                Success = true
             });
         }
 
@@ -175,7 +175,8 @@ namespace GlassStoreCore.BL.APIs
             return Ok(new JsonResults
             {
                 StatusCode = 200,
-                StatusMessage = "User Created Successfully."
+                StatusMessage = "User Created Successfully.",
+                Success = true
             });
         }
 
@@ -189,7 +190,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Couldn't Find Selected user",
-                    Status=false
+                    Success=false
                 });
             }
 
@@ -218,14 +219,14 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 400,
                     StatusMessage = "Couldn't update selected user.",
-                    Status = false
+                    Success = false
                 });
             }
             return Ok(new JsonResults
             {
                 StatusCode = 200,
                 StatusMessage = "Selected user has been updated successfully.",
-                Status = true
+                Success = true
             });
         }
 
@@ -237,7 +238,8 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest(new JsonResults
                 {
                     StatusCode = 400,
-                    StatusMessage = "Faild to find user."
+                    StatusMessage = "Faild to find user.",
+                    Success = false
                 });
             }
 
@@ -248,7 +250,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "No users found."
+                    StatusMessage = "No users found.",
+                    Success  = false
                 });
             }
 

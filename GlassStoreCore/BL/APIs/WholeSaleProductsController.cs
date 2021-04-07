@@ -35,7 +35,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "Selected Wholesale product not found."
+                    StatusMessage = "Selected Wholesale product not found.",
+                    Success = false
                 });
             }
 
@@ -57,7 +58,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "No products found."
+                    StatusMessage = "No products found.",
+                    Success = false
                 });
             }
 
@@ -74,7 +76,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "No products found."
+                    StatusMessage = "No products found.",
+                    Success = false
                 });
             }
 
@@ -94,14 +97,16 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest(new JsonResults
                 {
                     StatusCode = 400,
-                    StatusMessage = "Faild to create product."
+                    StatusMessage = "Faild to create product.",
+                    Success = false
                 });
             }
 
             return Ok(new JsonResults
             {
                 StatusCode = 200,
-                StatusMessage = "Whole sale product has been created successfully."
+                StatusMessage = "Whole sale product has been created successfully.",
+                Success = true
             });
         }
 
@@ -117,14 +122,16 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest(new JsonResults
                 {
                     StatusCode = 400,
-                    StatusMessage = "Couldn't Update selected product."
+                    StatusMessage = "Couldn't Update selected product.",
+                    Success = false
                 });
             }
 
             return Ok(new JsonResults
             {
                 StatusCode = 200,
-                StatusMessage = "Selected product updated successfully."
+                StatusMessage = "Selected product updated successfully.",
+                Success = true
             });
         }
 
@@ -139,7 +146,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "Selected product not found."
+                    StatusMessage = "Selected product not found.",
+                    Success = false
                 });
             }
 
@@ -150,14 +158,16 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest(new JsonResults
                 {
                     StatusCode = 400,
-                    StatusMessage = "Couldn't Delete selected product."
+                    StatusMessage = "Couldn't Delete selected product.",
+                    Success = false
                 });
             }
 
             return Ok(new JsonResults
             {
                 StatusCode = 200,
-                StatusMessage = "Selected product has been deleted succesfully."
+                StatusMessage = "Selected product has been deleted succesfully.",
+                Success = true
             });
         }
 

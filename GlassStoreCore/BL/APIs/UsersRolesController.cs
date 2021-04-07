@@ -37,7 +37,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "Selected user's role not found."
+                    StatusMessage = "Selected user's role not found.",
+                    Success = false
                 });
             }
 
@@ -56,7 +57,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "Selected user's role not found."
+                    StatusMessage = "Selected user's role not found.",
+                    Success = false
                 });
             }
             return Ok(selectedUserRoles);
@@ -73,14 +75,16 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest(new JsonResults
                 {
                     StatusCode = 400,
-                    StatusMessage = "Couldn't create user's role."
+                    StatusMessage = "Couldn't create user's role.",
+                    Success = false
                 });
             }
 
             return Ok(new JsonResults
             {
                 StatusCode = 200,
-                StatusMessage = "User's Role has been created successfully."
+                StatusMessage = "User's Role has been created successfully.",
+                Success = true
             });
         }
 
@@ -104,14 +108,16 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest(new JsonResults
                 {
                     StatusCode = 400,
-                    StatusMessage = "Couldn't update selected user's role."
+                    StatusMessage = "Couldn't update selected user's role.",
+                    Success = false
                 });
             }
 
             return Ok(new JsonResults
             {
                 StatusCode = 200,
-                StatusMessage = "User's role has been updated successfully."
+                StatusMessage = "User's role has been updated successfully.",
+                Success = true
             });
         }
 
@@ -125,7 +131,8 @@ namespace GlassStoreCore.BL.APIs
                 return NotFound(new JsonResults
                 {
                     StatusCode = 404,
-                    StatusMessage = "Selected user's role not found."
+                    StatusMessage = "Selected user's role not found.",
+                    Success = false
                 });
             }
 
@@ -136,14 +143,16 @@ namespace GlassStoreCore.BL.APIs
                 return BadRequest(new JsonResults
                 {
                     StatusCode = 400,
-                    StatusMessage = "Couldn't Delete selected user's role."
+                    StatusMessage = "Couldn't Delete selected user's role.",
+                    Success = false
                 });
             }
 
             return Ok(new JsonResults
             {
                 StatusCode = 200,
-                StatusMessage = "selected user's role has been deleted successfully."
+                StatusMessage = "selected user's role has been deleted successfully.",
+                Success = true
             });
         }
     }
