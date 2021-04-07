@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace GlassStoreCore.BL.DTOs.WholeSaleProductsDtos
+﻿namespace GlassStoreCore.BL.DTOs.WholeSaleProductsDtos
 {
     public class WholeSaleProductsOrderDetailsDto
     {

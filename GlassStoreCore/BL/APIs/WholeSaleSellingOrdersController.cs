@@ -110,9 +110,11 @@ namespace GlassStoreCore.BL.APIs
 
             foreach (var orderDetail in orderDetails)
             {
+
                 var product = _wholeSaleProductService.FindById(orderDetail.WholeSaleProductId);
                 product.UnitsInStock -= orderDetail.Quantity;
                 _wholeSaleProductService.Update(product);
+                orderDetail.WholeSaleSellingOrderId = order.Id;
                 orderDetailsResult += _wholeSaleSellingOrderDetailsService.Add(orderDetail);
             }
 
@@ -138,7 +140,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 OrderDate = wholeSaleSellingOrdersDto.OrderDate,
                 UserId = wholeSaleSellingOrdersDto.UserId,
-
             };
 
             var orderDetails = new List<WholeSaleSellingOrderDetails>();
