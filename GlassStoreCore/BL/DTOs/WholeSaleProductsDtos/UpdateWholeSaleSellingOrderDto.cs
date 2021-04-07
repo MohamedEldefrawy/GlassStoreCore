@@ -7,7 +7,7 @@ namespace GlassStoreCore.BL.DTOs.WholeSaleProductsDtos
 {
     public class UpdateWholeSaleSellingOrderDto
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         public ICollection<WholeSaleProductsOrderDetailsDto> WholeSaleSellingOrderDetails { get; set; }
 

@@ -14,7 +14,7 @@ namespace GlassStoreCore.BL.Models
 
         [ForeignKey("WholeSaleProductId")]
         public WholeSaleProducts WholeSaleProduct { get; set; }
-        public string WholeSaleSellingOrderId { get; set; }
+        public int WholeSaleSellingOrderId { get; set; }
 
         [ForeignKey("WholeSaleSellingOrderId")]
         public WholeSaleSellingOrder WholeSaleSellingOrder { get; set; }

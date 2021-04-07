@@ -7,6 +7,6 @@ namespace GlassStoreCore.BL.DTOs.WholeSaleProductsDtos
 {
     public class DeleteWholeSaleSellingOrderDto
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
     }
 }

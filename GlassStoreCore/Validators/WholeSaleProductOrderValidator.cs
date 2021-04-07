@@ -7,9 +7,6 @@ namespace GlassStoreCore.Validators
     {
         public WholeSaleProductOrderValidator()
         {
-            RuleFor(order => order.Id)
-                .NotEmpty()
-                .NotNull();
             RuleFor(order => order.OrderDate)
                 .NotNull()
                 .NotEmpty();

@@ -32,6 +32,7 @@ namespace GlassStoreCore.BL
                                                      cfg.CreateMap<WholeSaleProductsOrderDetailsDto, WholeSaleSellingOrderDetails>().ReverseMap();
                                                      cfg.CreateMap<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>().ReverseMap();
                                                      cfg.CreateMap<UpdateWholeSaleSellingOrderDto, WholeSaleProductsOrderDetailsDto>().ReverseMap();
+                                                     cfg.CreateMap<CreateWholeSaleSellingOrdersDto, WholeSaleSellingOrdersDto>().ReverseMap();
                                                  });
 
             this.Mapper = config.CreateMapper();

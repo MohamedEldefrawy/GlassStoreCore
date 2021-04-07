@@ -85,7 +85,7 @@ namespace GlassStoreCore.BL.APIs
 
         [HttpPost]
         public ActionResult<WholeSaleSellingOrder> CreateWholeSaleSellingOrder(
-            WholeSaleSellingOrdersDto wholeSaleSellingOrdersDto)
+            CreateWholeSaleSellingOrdersDto wholeSaleSellingOrdersDto)
         {
             var order = MappingSellingOrder(wholeSaleSellingOrdersDto);
             var orderDetails = order.WholeSaleSellingOrderDetails;
@@ -132,11 +132,10 @@ namespace GlassStoreCore.BL.APIs
             });
         }
 
-        private WholeSaleSellingOrder MappingSellingOrder(WholeSaleSellingOrdersDto wholeSaleSellingOrdersDto)
+        private WholeSaleSellingOrder MappingSellingOrder(CreateWholeSaleSellingOrdersDto wholeSaleSellingOrdersDto)
         {
             WholeSaleSellingOrder order = new WholeSaleSellingOrder
             {
-                Id = wholeSaleSellingOrdersDto.Id,
                 OrderDate = wholeSaleSellingOrdersDto.OrderDate,
                 UserId = wholeSaleSellingOrdersDto.UserId,
 

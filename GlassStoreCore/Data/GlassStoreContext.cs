@@ -26,6 +26,9 @@ namespace GlassStoreCore.Data
                 p.Id
             });
 
+            modelBuilder.Entity<WholeSaleSellingOrder>()
+                .Property(o => o.Id).ValueGeneratedOnAdd();
+
             modelBuilder.Entity<WholeSaleSellingOrderDetails>()
                 .HasKey(od =>
                             new
