@@ -67,7 +67,7 @@ namespace GlassStoreCore.BL.APIs
             return Ok(pageResponse);
         }
 
-        [HttpGet]
+        [HttpPost]
         public ActionResult<ApplicationUser> Login(string username, string password)
         {
             var result = _usersService.Authenticate(username, password);
@@ -190,7 +190,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Couldn't Find Selected user",
-                    Success=false
+                    Success = false
                 });
             }
 
@@ -251,7 +251,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "No users found.",
-                    Success  = false
+                    Success = false
                 });
             }
 
