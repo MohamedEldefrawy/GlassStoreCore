@@ -22,24 +22,28 @@ namespace GlassStoreCore.Services.UserService
             _context = context;
         }
 
-        public ApplicationUser Authenticate(string username, string password)
+        public LoggedInUserDto Authenticate(LoginUserDto userDto)
         {
             var PasswordHasher = new PasswordHasher<ApplicationUser>();
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(userDto.UserName) || string.IsNullOrEmpty(userDto.Password))
                 return null;
 
-            var user = _context.Users.SingleOrDefault(x => x.UserName == username);
+            var user = _context.Users.SingleOrDefault(x => x.UserName == userDto.UserName);
 
             // check if username exists
             if (user == null)
                 return null;
 
             // check if password is correct
-            if (PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password) == PasswordVerificationResult.Failed)
+            if (PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, userDto.Password) == PasswordVerificationResult.Failed)
                 return null;
 
             // authentication successful
-            return user;
+            return new LoggedInUserDto
+            {
+                UserID = user.Id,
+                UserName = user.UserName
+            };
 
         }
 

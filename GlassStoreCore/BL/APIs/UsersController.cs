@@ -68,9 +68,9 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpPost]
-        public ActionResult<ApplicationUser> Login(string username, string password)
+        public ActionResult<ApplicationUser> Login(CreateUserDto createUserDto)
         {
-            var result = _usersService.Authenticate(username, password);
+            var result = _usersService.Authenticate(createUserDto.UserName, createUserDto.Password);
             if (result == null)
             {
                 return NotFound(new JsonResults
