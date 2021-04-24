@@ -67,10 +67,10 @@ namespace GlassStoreCore.BL.APIs
             return Ok(pageResponse);
         }
 
-        [HttpGet]
-        public ActionResult<ApplicationUser> Login(CreateUserDto createUserDto)
+        [HttpPost]
+        public ActionResult<ApplicationUser> Login(LoginUserDto createUserDto)
         {
-            var result = _usersService.Authenticate(createUserDto.UserName, createUserDto.Password);
+            var result = _usersService.Authenticate(createUserDto);
             if (result == null)
             {
                 return NotFound(new JsonResults
