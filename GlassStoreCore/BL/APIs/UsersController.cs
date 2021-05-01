@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GlassStoreCore.BL.APIs.Filters;
+﻿using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.UsersDtos;
 using GlassStoreCore.BL.DTOs.UsersRolesDtos;
 using GlassStoreCore.BL.Models;
@@ -11,6 +9,8 @@ using GlassStoreCore.Services.UserService;
 using GlassStoreCore.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GlassStoreCore.BL.APIs
 {

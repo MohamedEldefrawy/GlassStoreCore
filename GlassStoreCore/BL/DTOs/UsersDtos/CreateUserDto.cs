@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using GlassStoreCore.BL.DTOs.UsersRolesDtos;
 
 namespace GlassStoreCore.BL.DTOs.UsersDtos

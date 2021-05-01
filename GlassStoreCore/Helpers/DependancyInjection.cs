@@ -2,7 +2,6 @@
 using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs.UsersDtos;
 using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
-using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data.UnitOfWork;
 using GlassStoreCore.Services.PaginationUowService;
 using GlassStoreCore.Services.RolesService;
