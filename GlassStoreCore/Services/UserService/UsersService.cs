@@ -5,6 +5,7 @@ using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs.UsersDtos;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data;
+using GlassStoreCore.Helpers;
 using Microsoft.AspNetCore.Identity;
 
 namespace GlassStoreCore.Services.UserService
@@ -25,6 +26,7 @@ namespace GlassStoreCore.Services.UserService
         public LoggedInUserDto Authenticate(LoginUserDto userDto)
         {
             var PasswordHasher = new PasswordHasher<ApplicationUser>();
+
             if (string.IsNullOrEmpty(userDto.UserName) || string.IsNullOrEmpty(userDto.Password))
                 return null;
 
@@ -34,8 +36,11 @@ namespace GlassStoreCore.Services.UserService
             if (user == null)
                 return null;
 
+            var isAuthunticated = UserVerification.VerifyHashedPassword(user, userDto.Password);
+
             // check if password is correct
-            if (PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, userDto.Password) == PasswordVerificationResult.Failed)
+
+            if (!isAuthunticated)
                 return null;
 
             // authentication successful
@@ -44,27 +49,7 @@ namespace GlassStoreCore.Services.UserService
                 UserID = user.Id,
                 UserName = user.UserName
             };
-
         }
-
-        //private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
-        //{
-        //    if (password == null) throw new ArgumentNullException("password");
-        //    if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
-        //    if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
-        //    if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
-
-        //    using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
-        //    {
-        //        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        //        for (int i = 0; i < computedHash.Length; i++)
-        //        {
-        //            if (computedHash[i] != storedHash[i]) return false;
-        //        }
-        //    }
-
-        //    return true;
-        //}
 
         public async Task<ApplicationUser> CreateUser(CreateUserDto user)
         {
