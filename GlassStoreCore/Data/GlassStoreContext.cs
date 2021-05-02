@@ -26,6 +26,14 @@ namespace GlassStoreCore.Data
                 p.Id
             });
 
+            modelBuilder.Entity<WholeSaleProducts>()
+                .Property(p => p.Price)
+                .HasPrecision(9, 2);
+
+            modelBuilder.Entity<WholeSaleSellingOrderDetails>()
+                .Property(od => od.Price)
+                .HasPrecision(9, 2);
+
             modelBuilder.Entity<WholeSaleSellingOrder>()
                 .Property(o => o.Id).ValueGeneratedOnAdd();
 
@@ -50,6 +58,7 @@ namespace GlassStoreCore.Data
                 p.WholeSaleSellingOrderId,
                 p.WholeSaleProductId
             });
+
         }
     }
 }
