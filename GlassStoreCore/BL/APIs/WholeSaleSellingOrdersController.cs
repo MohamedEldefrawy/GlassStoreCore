@@ -50,7 +50,7 @@ namespace GlassStoreCore.BL.APIs
             var ordersDto = orders.Select(_mapper.Mapper.Map<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>)
                                   .ToList();
 
-            var (orderDetailsDto, x) = _wholeSaleSellingOrderDetailsService.GetAll(filter.PageNumber, filter.PageSize);
+            var (orderDetailsDto, x) = _wholeSaleSellingOrderDetailsService.GetAll(filter.PageNumber, int.MaxValue);
             var od = orderDetailsDto.AsQueryable();
             foreach (var order in ordersDto)
             {
@@ -104,7 +104,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 400,
                     StatusMessage = string.Format("The {0} is out of stock.", productName),
-                    Success =false
+                    Success = false
                 });
             }
 
@@ -135,7 +135,7 @@ namespace GlassStoreCore.BL.APIs
             {
                 StatusCode = 200,
                 StatusMessage = "Order has been created successfully.",
-                Success =false
+                Success = true
             });
         }
 
@@ -144,6 +144,7 @@ namespace GlassStoreCore.BL.APIs
             WholeSaleSellingOrder order = new WholeSaleSellingOrder
             {
                 OrderDate = wholeSaleSellingOrdersDto.OrderDate,
+                RecievingOrderDate = wholeSaleSellingOrdersDto.RecievingOrderDate,
                 UserId = wholeSaleSellingOrdersDto.UserId,
             };
 
@@ -191,7 +192,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Selected Order not found.",
-                    Success =false
+                    Success = false
                 });
             }
 
@@ -229,7 +230,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 400,
                     StatusMessage = "Couldn't update selected order.",
-                    Success =false
+                    Success = false
                 });
             }
 
@@ -253,7 +254,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 404,
                     StatusMessage = "Selected order not found.",
-                    Success =false
+                    Success = false
                 });
             }
 
@@ -268,7 +269,7 @@ namespace GlassStoreCore.BL.APIs
                 {
                     StatusCode = 400,
                     StatusMessage = "Faild to delete order details.",
-                    Success =false
+                    Success = false
                 });
             }
 
