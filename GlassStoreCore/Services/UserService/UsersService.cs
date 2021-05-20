@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using GlassStoreCore.BL;
 using GlassStoreCore.BL.DTOs.UsersDtos;
@@ -25,18 +26,24 @@ namespace GlassStoreCore.Services.UserService
 
         public LoggedInUserDto Authenticate(LoginUserDto userDto)
         {
+            AesDecrypt.keyAndIvBytes = UTF8Encoding.UTF8.GetBytes("Secret Passphrase");
+
             var PasswordHasher = new PasswordHasher<ApplicationUser>();
+
+            var password = AesDecrypt.DecodeAndDecrypt(userDto.Password);
 
             if (string.IsNullOrEmpty(userDto.UserName) || string.IsNullOrEmpty(userDto.Password))
                 return null;
 
             var user = _context.Users.SingleOrDefault(x => x.UserName == userDto.UserName);
+            var hashedPassword = PasswordHasher.HashPassword(user, password);
+
 
             // check if username exists
             if (user == null)
                 return null;
 
-            var isAuthunticated = UserVerification.VerifyHashedPassword(user, userDto.Password);
+            var isAuthunticated = UserVerification.VerifyHashedPassword(user, hashedPassword);
 
             // check if password is correct
 

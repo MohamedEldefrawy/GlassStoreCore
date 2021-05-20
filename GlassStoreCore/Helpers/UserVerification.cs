@@ -1,12 +1,13 @@
 ﻿using GlassStoreCore.BL.Models;
 using System;
+using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace GlassStoreCore.Helpers
 {
     public static class UserVerification
     {
-
         public static bool VerifyHashedPassword(ApplicationUser user, string hashedPassword)
         {
 
