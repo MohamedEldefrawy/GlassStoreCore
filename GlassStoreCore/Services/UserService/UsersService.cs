@@ -26,9 +26,7 @@ namespace GlassStoreCore.Services.UserService
 
         public LoggedInUserDto Authenticate(LoginUserDto userDto)
         {
-            AesDecrypt.keyAndIvBytes = UTF8Encoding.UTF8.GetBytes("Secret Passphrase");
-
-            var PasswordHasher = new PasswordHasher<ApplicationUser>();
+            AesDecrypt.keyAndIvBytes = Encoding.UTF8.GetBytes("8080808080808080");
 
             var password = AesDecrypt.DecodeAndDecrypt(userDto.Password);
 
@@ -36,18 +34,16 @@ namespace GlassStoreCore.Services.UserService
                 return null;
 
             var user = _context.Users.SingleOrDefault(x => x.UserName == userDto.UserName);
-            var hashedPassword = PasswordHasher.HashPassword(user, password);
 
 
             // check if username exists
             if (user == null)
                 return null;
 
-            var isAuthunticated = UserVerification.VerifyHashedPassword(user, hashedPassword);
+            var signInResult = _userManager.CheckPasswordAsync(user, password);
 
             // check if password is correct
-
-            if (!isAuthunticated)
+            if (!signInResult.Result)
                 return null;
 
             // authentication successful

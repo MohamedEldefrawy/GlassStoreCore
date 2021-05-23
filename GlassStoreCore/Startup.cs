@@ -32,6 +32,7 @@ namespace GlassStoreCore
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
+                options.SignIn.RequireConfirmedEmail = true;
             });
 
             services.AddDependency();
@@ -68,6 +69,10 @@ namespace GlassStoreCore
                     .AllowAnyHeader();
                 });
             });
+
+            services.Configure<PasswordHasherOptions>(options =>
+                options.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3
+);
             // In production, the React files will be served from this directory
             //services.AddSpaStaticFiles(configuration =>
             //{
