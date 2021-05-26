@@ -25,9 +25,7 @@ namespace GlassStoreCore.Services.UserService
 
         public LoggedInUserDto Authenticate(LoginUserDto userDto)
         {
-            AesDecrypt.keyAndIvBytes = Encoding.UTF8.GetBytes("8080808080808080");
-
-            var password = AesDecrypt.DecodeAndDecrypt(userDto.Password);
+            string password = DecryptPasswordAES(userDto.Password);
 
             if (string.IsNullOrEmpty(userDto.UserName) || string.IsNullOrEmpty(userDto.Password))
                 return null;
@@ -51,6 +49,14 @@ namespace GlassStoreCore.Services.UserService
                 UserID = user.Id,
                 UserName = user.UserName
             };
+        }
+
+        public string DecryptPasswordAES(string text)
+        {
+            AesDecrypt.keyAndIvBytes = Encoding.UTF8.GetBytes("8080808080808080");
+
+            var password = AesDecrypt.DecodeAndDecrypt(text);
+            return password;
         }
 
         public async Task<ApplicationUser> CreateUser(CreateUserDto user)

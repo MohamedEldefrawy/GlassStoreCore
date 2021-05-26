@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace GlassStoreCore.BL.APIs
 {
@@ -157,6 +158,10 @@ namespace GlassStoreCore.BL.APIs
         [HttpPost]
         public ActionResult<ApplicationUser> CreateUser(CreateUserDto userDto)
         {
+            AesDecrypt.keyAndIvBytes = Encoding.UTF8.GetBytes("8080808080808080");
+            userDto.Password = AesDecrypt.DecodeAndDecrypt(userDto.Password);
+            userDto.ConfirmPassword = AesDecrypt.DecodeAndDecrypt(userDto.ConfirmPassword);
+
             UsersValidator validator = new UsersValidator();
             var validationResult = validator.Validate(userDto);
 
