@@ -51,6 +51,10 @@ namespace GlassStoreCore.Services.UserService
             };
         }
 
+        public void LogOut()
+        {
+        }
+
         public string DecryptPasswordAES(string text)
         {
             AesDecrypt.keyAndIvBytes = Encoding.UTF8.GetBytes("8080808080808080");
