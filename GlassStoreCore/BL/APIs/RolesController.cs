@@ -4,13 +4,11 @@ using GlassStoreCore.BL.DTOs.RolesDtos;
 using GlassStoreCore.Helpers;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlassStoreCore.BL.APIs
 {
-    [Authorize(Roles = "Admin")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class RolesController : ControllerBase

@@ -7,10 +7,8 @@ using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
 using GlassStoreCore.Services.UserService;
 using GlassStoreCore.Validators;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,18 +23,15 @@ namespace GlassStoreCore.BL.APIs
         private readonly IPaginationUow _paginationUow;
         private readonly IService<IdentityUserRole<string>> _userRolesService;
         private readonly IUsersService _usersService;
-        private readonly IConfiguration _configuration;
 
-        public UsersController(IPaginationUow paginationUow, ObjectMapper mapper, IConfiguration configuration)
+        public UsersController(IPaginationUow paginationUow, ObjectMapper mapper)
         {
-            _configuration = configuration;
             _paginationUow = paginationUow;
             _mapper = mapper;
             _usersService = _paginationUow.GetUsersService();
             _userRolesService = _paginationUow.Service<IdentityUserRole<string>>();
         }
 
-        [Authorize(Roles = "Admin")]
         public ActionResult<ApplicationUser> GetUsers([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
@@ -73,7 +68,6 @@ namespace GlassStoreCore.BL.APIs
             return Ok(pageResponse);
         }
 
-        [AllowAnonymous]
         [HttpPost]
         public ActionResult<ApplicationUser> Login(LoginUserDto createUserDto)
         {
@@ -86,21 +80,14 @@ namespace GlassStoreCore.BL.APIs
                     Success = false,
                 });
             }
-            else
+            return Ok(new JsonResults
             {
-                var tokenString = JwtAuth.GenerateJSONWebToken(result, _configuration);
-                return Ok(new JsonResults
-                {
-                    Token = tokenString,
-                    StatusMessage = "User has logged in successfully.",
-                    Success = true,
-                    Data = result
-                });
-            }
-
+                StatusMessage = "User has logged in successfully.",
+                Success = true,
+                Data = result
+            });
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public ActionResult<ApplicationUser> GetUser(string id)
         {
@@ -135,7 +122,6 @@ namespace GlassStoreCore.BL.APIs
             });
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public ActionResult<ApplicationUser> DeleteUser(string id)
         {
@@ -169,8 +155,6 @@ namespace GlassStoreCore.BL.APIs
             });
         }
 
-
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult<ApplicationUser> CreateUser(CreateUserDto userDto)
         {
@@ -206,8 +190,6 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpPut("{id}")]
-
-        [Authorize(Roles = "Admin")]
         public ActionResult<ApplicationUser> UpdateUser(UserDto userDto, string id)
         {
             var user = _usersService.FindById(id);
@@ -255,7 +237,6 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpGet]
-        [Authorize]
         public ActionResult<ApplicationUser> FindUserByName(UserNameDto nameDto)
         {
             if (nameDto is null)

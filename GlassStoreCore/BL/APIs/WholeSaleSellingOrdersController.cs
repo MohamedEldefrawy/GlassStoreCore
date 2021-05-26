@@ -7,12 +7,10 @@ using GlassStoreCore.BL.Models;
 using GlassStoreCore.Helpers;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GlassStoreCore.BL.APIs
 {
-    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class WholeSaleSellingOrdersController : ControllerBase
