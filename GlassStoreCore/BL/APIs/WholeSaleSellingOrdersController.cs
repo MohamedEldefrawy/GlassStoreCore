@@ -41,7 +41,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "No orders found.",
                     Success = false
                 });
@@ -62,6 +61,7 @@ namespace GlassStoreCore.BL.APIs
                 PaginationHelper.CreatePagedResponse(ordersDto, filter, totalRecords, _paginationUow, route);
 
             pageResponse.Message = "Orders returned successfully.";
+            pageResponse.Succeeded = true;
 
             return Ok(pageResponse);
         }
@@ -76,7 +76,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected order not found.",
                     Success = false
                 });
@@ -102,7 +101,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = string.Format("The {0} is out of stock.", productName),
                     Success = false
                 });
@@ -125,7 +123,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Couldn't create the order.",
                     Success = false
                 });
@@ -133,7 +130,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Order has been created successfully.",
                 Success = true
             });
@@ -190,7 +186,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected Order not found.",
                     Success = false
                 });
@@ -228,7 +223,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Couldn't update selected order.",
                     Success = false
                 });
@@ -236,7 +230,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Selected order has been updated successfully.",
                 Success = true
             });
@@ -252,7 +245,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected order not found.",
                     Success = false
                 });
@@ -267,7 +259,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Faild to delete order details.",
                     Success = false
                 });
@@ -279,7 +270,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Couldn't delete selected order.",
                     Success = false
                 });
@@ -287,7 +277,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Selected order has been deleted successfully.",
                 Success = true
             });
@@ -311,7 +300,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected order detail not found.",
                     Success = false
                 });
@@ -325,7 +313,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Faild to delete selected order detail.",
                     Success = false
                 });
@@ -333,7 +320,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Selected order detail has been deleted successfully.",
                 Success = true
             });

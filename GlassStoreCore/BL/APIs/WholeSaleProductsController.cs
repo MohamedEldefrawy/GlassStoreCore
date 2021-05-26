@@ -34,7 +34,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected Wholesale product not found.",
                     Success = false
                 });
@@ -43,6 +42,7 @@ namespace GlassStoreCore.BL.APIs
             var productsDto = products.Select(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>).ToList();
             var pageResponse = PaginationHelper.CreatePagedResponse(productsDto, filter, totalRecords, _paginationUow, route);
             pageResponse.Message = "request has been completed successfully";
+            pageResponse.Succeeded = true;
             return Ok(pageResponse);
         }
 
@@ -57,13 +57,17 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "No products found.",
                     Success = false
                 });
             }
 
-            return Ok(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>(product));
+            return Ok(new JsonResults
+            {
+                StatusMessage = "Product Has been selected successfully.",
+                Success = true,
+                Data = _mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>(product)
+            });
         }
 
         [HttpGet]
@@ -75,13 +79,17 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "No products found.",
                     Success = false
                 });
             }
 
-            return Ok(products.Select(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>));
+            return Ok(new JsonResults
+            {
+                StatusMessage = "Products has been found successfully.",
+                Success = true,
+                Data = products.Select(_mapper.Mapper.Map<WholeSaleProducts, WholeSaleProductsDto>)
+            });
 
         }
 
@@ -96,7 +104,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Faild to create product.",
                     Success = false
                 });
@@ -104,7 +111,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Whole sale product has been created successfully.",
                 Success = true
             });
@@ -121,7 +127,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Couldn't Update selected product.",
                     Success = false
                 });
@@ -129,7 +134,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Selected product updated successfully.",
                 Success = true
             });
@@ -145,7 +149,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected product not found.",
                     Success = false
                 });
@@ -157,7 +160,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Couldn't Delete selected product.",
                     Success = false
                 });
@@ -165,7 +167,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Selected product has been deleted succesfully.",
                 Success = true
             });

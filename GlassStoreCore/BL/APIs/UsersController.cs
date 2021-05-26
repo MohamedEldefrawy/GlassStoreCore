@@ -40,7 +40,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Couldn't Find users.",
                     Success = false
                 });
@@ -64,6 +63,7 @@ namespace GlassStoreCore.BL.APIs
             }
 
             var pageResponse = PaginationHelper.CreatePagedResponse(usersDtos, filter, totalRecords, _paginationUow, route);
+            pageResponse.Succeeded = true;
             return Ok(pageResponse);
         }
 
@@ -75,15 +75,12 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Wrong UserName or password.",
                     Success = false,
-                    Data = null
                 });
             }
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "User has logged in successfully.",
                 Success = true,
                 Data = result
@@ -99,7 +96,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected user not found.",
                     Success = false
                 });
@@ -117,7 +113,12 @@ namespace GlassStoreCore.BL.APIs
                     RoleId = role.RoleId
                 });
             }
-            return Ok(userDto);
+            return Ok(new JsonResults
+            {
+                StatusMessage = "User has been selected successfully.",
+                Success = true,
+                Data = userDto
+            });
         }
 
         [HttpDelete("{id}")]
@@ -130,7 +131,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Selected user not found.",
                     Success = false
                 });
@@ -142,7 +142,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Faild to Delete selected user.",
                     Success = false
                 });
@@ -150,7 +149,6 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Selected user has been deleted succesfully.",
                 Success = true
             });
@@ -181,7 +179,6 @@ namespace GlassStoreCore.BL.APIs
             }
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "User Created Successfully.",
                 Success = true
             });
@@ -195,7 +192,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "Couldn't Find Selected user",
                     Success = false
                 });
@@ -224,14 +220,12 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Couldn't update selected user.",
                     Success = false
                 });
             }
             return Ok(new JsonResults
             {
-                StatusCode = 200,
                 StatusMessage = "Selected user has been updated successfully.",
                 Success = true
             });
@@ -244,7 +238,6 @@ namespace GlassStoreCore.BL.APIs
             {
                 return BadRequest(new JsonResults
                 {
-                    StatusCode = 400,
                     StatusMessage = "Faild to find user.",
                     Success = false
                 });
@@ -256,13 +249,17 @@ namespace GlassStoreCore.BL.APIs
             {
                 return NotFound(new JsonResults
                 {
-                    StatusCode = 404,
                     StatusMessage = "No users found.",
                     Success = false
                 });
             }
 
-            return Ok(users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>));
+            return Ok(new JsonResults
+            {
+                StatusMessage = "User has been found successfully.",
+                Success = true,
+                Data = users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>)
+            });
         }
     }
 }
