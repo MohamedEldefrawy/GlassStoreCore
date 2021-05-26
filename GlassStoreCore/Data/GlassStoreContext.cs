@@ -58,7 +58,6 @@ namespace GlassStoreCore.Data
                 p.WholeSaleSellingOrderId,
                 p.WholeSaleProductId
             });
-
         }
     }
 }

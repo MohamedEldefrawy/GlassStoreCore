@@ -32,7 +32,6 @@ namespace GlassStoreCore
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
-                options.SignIn.RequireConfirmedEmail = true;
             });
 
             services.AddDependency();

@@ -7,7 +7,7 @@ namespace GlassStoreCore.Validators
         public UsersValidator()
         {
             RuleFor(user => user.Password)
-                .Length(6, 20)
+                .Length(6, 255)
                 .WithMessage("Please Enter a valid passwod with min Lenght 6 and max 20.");
 
 
