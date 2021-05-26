@@ -78,9 +78,16 @@ namespace GlassStoreCore.BL.APIs
                     StatusCode = 404,
                     StatusMessage = "Wrong UserName or password.",
                     Success = false,
+                    Data = null
                 });
             }
-            return Ok(result);
+            return Ok(new JsonResults
+            {
+                StatusCode = 200,
+                StatusMessage = "User has logged in successfully.",
+                Success = true,
+                Data = result
+            });
         }
 
         [HttpGet("{id}")]
