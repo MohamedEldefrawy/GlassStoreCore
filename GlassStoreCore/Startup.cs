@@ -78,8 +78,17 @@ namespace GlassStoreCore
             });
 
             services.Configure<PasswordHasherOptions>(options =>
-                options.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3
-);
+                options.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3);
+
+            // Pasword Config
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            });
+
             // In production, the React files will be served from this directory
             //services.AddSpaStaticFiles(configuration =>
             //{
@@ -88,7 +97,7 @@ namespace GlassStoreCore
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
