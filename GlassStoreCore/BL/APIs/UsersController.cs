@@ -107,6 +107,8 @@ namespace GlassStoreCore.BL.APIs
             });
         }
 
+        [Authorize]
+        [HttpPost]
         public ActionResult<ApplicationUser> LogOut()
         {
             var result = _usersService.SignOut();
@@ -121,8 +123,6 @@ namespace GlassStoreCore.BL.APIs
                 StatusMessage = "Logged out successfully.",
                 Success = true
             });
-
-
         }
 
         [HttpGet("{id}")]
