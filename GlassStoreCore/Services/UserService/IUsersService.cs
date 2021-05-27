@@ -8,5 +8,6 @@ namespace GlassStoreCore.Services.UserService
     {
         public Task<ApplicationUser> CreateUser(CreateUserDto user);
         public LoggedInUserDto Authenticate(LoginUserDto userDto);
+        public bool SignOut();
     }
 }

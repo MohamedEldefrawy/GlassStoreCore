@@ -25,6 +25,7 @@ namespace GlassStoreCore.BL.APIs
         private readonly IPaginationUow _paginationUow;
         private readonly IService<IdentityUserRole<string>> _userRolesService;
         private readonly IUsersService _usersService;
+        private Singleton singleton;
 
         public UsersController(IPaginationUow paginationUow, ObjectMapper mapper)
         {
@@ -32,13 +33,24 @@ namespace GlassStoreCore.BL.APIs
             _mapper = mapper;
             _usersService = _paginationUow.GetUsersService();
             _userRolesService = _paginationUow.Service<IdentityUserRole<string>>();
+            singleton = Singleton.GetInstance;
         }
 
         [Authorize]
+        [HttpGet]
         public ActionResult<ApplicationUser> GetUsers([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
             var (users, totalRecords) = _usersService.GetAll(filter.PageNumber, filter.PageSize);
+
+            if (singleton.JwtToken == string.Empty)
+            {
+                return (BadRequest(new OtherJsonResponse
+                {
+                    StatusMessage = "Please Login first",
+                    Success = false
+                }));
+            }
 
             if (users == null)
             {
@@ -93,6 +105,24 @@ namespace GlassStoreCore.BL.APIs
                 Token = ApiToken,
                 Data = result
             });
+        }
+
+        public ActionResult<ApplicationUser> LogOut()
+        {
+            var result = _usersService.SignOut();
+            if (!result)
+                return BadRequest(new OtherJsonResponse
+                {
+                    StatusMessage = "Couldn't Logout.",
+                    Success = false
+                });
+            return Ok(new OtherJsonResponse
+            {
+                StatusMessage = "Logged out successfully.",
+                Success = true
+            });
+
+
         }
 
         [HttpGet("{id}")]

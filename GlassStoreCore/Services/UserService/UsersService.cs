@@ -74,5 +74,18 @@ namespace GlassStoreCore.Services.UserService
             }
             return newUser;
         }
+
+        public bool SignOut()
+        {
+            _signInManager.SignOutAsync();
+            JwtToken.RemoveCurrnetToken();
+            Singleton singleton = Singleton.GetInstance;
+
+            if (singleton.JwtToken == string.Empty)
+                return true;
+            else
+                return false;
+
+        }
     }
 }
