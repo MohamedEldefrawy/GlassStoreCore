@@ -5,6 +5,7 @@ using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Helpers;
+using GlassStoreCore.JsonResponses;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (orders.Count == 0)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "No orders found.",
                     Success = false
@@ -74,7 +75,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedOrder == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected order not found.",
                     Success = false
@@ -99,7 +100,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (!isUnitInStockAvailable)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = string.Format("The {0} is out of stock.", productName),
                     Success = false
@@ -121,14 +122,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (orderDetailsResult <= 0 || orderResult <= 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't create the order.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Order has been created successfully.",
                 Success = true
@@ -184,7 +185,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedOd == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected Order not found.",
                     Success = false
@@ -221,14 +222,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result <= 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't update selected order.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected order has been updated successfully.",
                 Success = true
@@ -243,7 +244,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedOrder == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected order not found.",
                     Success = false
@@ -257,7 +258,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedOrder.WholeSaleSellingOrderDetails.Count != 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Faild to delete order details.",
                     Success = false
@@ -268,14 +269,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't delete selected order.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected order has been deleted successfully.",
                 Success = true
@@ -298,7 +299,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedOd == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected order detail not found.",
                     Success = false
@@ -311,14 +312,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result <= 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Faild to delete selected order detail.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected order detail has been deleted successfully.",
                 Success = true

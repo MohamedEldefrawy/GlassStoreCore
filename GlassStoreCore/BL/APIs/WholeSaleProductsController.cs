@@ -4,6 +4,7 @@ using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.WholeSaleProductsDtos;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Helpers;
+using GlassStoreCore.JsonResponses;
 using GlassStoreCore.Services.PaginationUowService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +33,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (products.Count == 0)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected Wholesale product not found.",
                     Success = false
@@ -55,14 +56,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (product == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "No products found.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new GetJsonResponse
             {
                 StatusMessage = "Product Has been selected successfully.",
                 Success = true,
@@ -77,14 +78,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (products == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "No products found.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new GetJsonResponse
             {
                 StatusMessage = "Products has been found successfully.",
                 Success = true,
@@ -102,14 +103,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result <= 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Faild to create product.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Whole sale product has been created successfully.",
                 Success = true
@@ -125,14 +126,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result <= 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't Update selected product.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected product updated successfully.",
                 Success = true
@@ -147,7 +148,7 @@ namespace GlassStoreCore.BL.APIs
             var selectedProduct = wholeSaleProductService.FindById(guid);
             if (selectedProduct == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected product not found.",
                     Success = false
@@ -158,14 +159,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result <= 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't Delete selected product.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected product has been deleted succesfully.",
                 Success = true

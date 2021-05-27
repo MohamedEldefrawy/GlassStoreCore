@@ -10,11 +10,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FluentValidation.AspNetCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace GlassStoreCore
 {
     public class Startup
     {
+        private const string secretKey = "BBAIDf4CZEmxZ2TIGdDJ7w==";
+        public static readonly SymmetricSecurityKey SigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,30 +31,32 @@ namespace GlassStoreCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-            });
-
             services.AddDependency();
             services.AddDbContext<GlassStoreContext>(options =>
                                                          options.UseSqlServer(
                                                                               Configuration.GetConnectionString("MyConn")), ServiceLifetime.Transient);
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
                     .AddEntityFrameworkStores<GlassStoreContext>();
-
-            services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, GlassStoreContext>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "JwtBearer";
+                options.DefaultChallengeScheme = "JwtBearer";
+            }).AddJwtBearer("JwtBearer", jwtOptions =>
+            {
+                jwtOptions.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    IssuerSigningKey = SigningKey,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = "https://localhost:44302/",
+                    ValidAudience = "https://localhost:44302/",
+                    ValidateLifetime = true
+                };
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -97,13 +105,14 @@ namespace GlassStoreCore
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCors();
+
             //app.UseSpaStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseIdentityServer();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

@@ -3,10 +3,12 @@ using GlassStoreCore.BL.DTOs.UsersDtos;
 using GlassStoreCore.BL.DTOs.UsersRolesDtos;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Helpers;
+using GlassStoreCore.JsonResponses;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
 using GlassStoreCore.Services.UserService;
 using GlassStoreCore.Validators;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -32,6 +34,7 @@ namespace GlassStoreCore.BL.APIs
             _userRolesService = _paginationUow.Service<IdentityUserRole<string>>();
         }
 
+        [Authorize]
         public ActionResult<ApplicationUser> GetUsers([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
@@ -39,7 +42,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (users == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't Find users.",
                     Success = false
@@ -69,21 +72,25 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpPost]
-        public ActionResult<ApplicationUser> Login(LoginUserDto createUserDto)
+        public ActionResult<ApplicationUser> Login(LoginUserDto loginUserDto)
         {
-            var result = _usersService.Authenticate(createUserDto);
+
+            var result = _usersService.Authenticate(loginUserDto);
+            var ApiToken = JwtToken.GenerateJwtToken(result);
+
             if (result == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Wrong UserName or password.",
                     Success = false,
                 });
             }
-            return Ok(new JsonResults
+            return Ok(new LoginJsonResponse
             {
                 StatusMessage = "User has logged in successfully.",
                 Success = true,
+                Token = ApiToken,
                 Data = result
             });
         }
@@ -95,7 +102,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (user == null)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Selected user not found.",
                     Success = false
@@ -114,7 +121,7 @@ namespace GlassStoreCore.BL.APIs
                     RoleId = role.RoleId
                 });
             }
-            return Ok(new JsonResults
+            return Ok(new GetJsonResponse
             {
                 StatusMessage = "User has been selected successfully.",
                 Success = true,
@@ -130,7 +137,7 @@ namespace GlassStoreCore.BL.APIs
             var selectedUser = userService.FindById(id);
             if (selectedUser == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected user not found.",
                     Success = false
@@ -141,14 +148,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Faild to Delete selected user.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected user has been deleted succesfully.",
                 Success = true
@@ -182,7 +189,7 @@ namespace GlassStoreCore.BL.APIs
                 });
                 _paginationUow.Complete();
             }
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "User Created Successfully.",
                 Success = true
@@ -195,7 +202,7 @@ namespace GlassStoreCore.BL.APIs
             var user = _usersService.FindById(id);
             if (user == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't Find Selected user",
                     Success = false
@@ -223,13 +230,13 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't update selected user.",
                     Success = false
                 });
             }
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected user has been updated successfully.",
                 Success = true
@@ -241,7 +248,7 @@ namespace GlassStoreCore.BL.APIs
         {
             if (nameDto is null)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Faild to find user.",
                     Success = false
@@ -252,14 +259,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (users == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "No users found.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new GetJsonResponse
             {
                 StatusMessage = "User has been found successfully.",
                 Success = true,

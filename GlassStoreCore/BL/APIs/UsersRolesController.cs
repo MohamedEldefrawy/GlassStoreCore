@@ -3,6 +3,7 @@ using System.Linq;
 using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.UsersRolesDtos;
 using GlassStoreCore.Helpers;
+using GlassStoreCore.JsonResponses;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
 using Microsoft.AspNetCore.Identity;
@@ -34,7 +35,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (userRoles == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected user's role not found.",
                     Success = false
@@ -54,13 +55,13 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedUserRoles == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected user's role not found.",
                     Success = false
                 });
             }
-            return Ok(new JsonResults
+            return Ok(new GetJsonResponse
             {
                 StatusMessage = "USer role has been selected successfully.",
                 Success = true,
@@ -76,14 +77,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result <= 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't create user's role.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "User's Role has been created successfully.",
                 Success = true
@@ -107,14 +108,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't update selected user's role.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "User's role has been updated successfully.",
                 Success = true
@@ -128,7 +129,7 @@ namespace GlassStoreCore.BL.APIs
 
             if (selectedUserRoles == null)
             {
-                return NotFound(new JsonResults
+                return NotFound(new OtherJsonResponse
                 {
                     StatusMessage = "Selected user's role not found.",
                     Success = false
@@ -139,14 +140,14 @@ namespace GlassStoreCore.BL.APIs
 
             if (result == 0)
             {
-                return BadRequest(new JsonResults
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Couldn't Delete selected user's role.",
                     Success = false
                 });
             }
 
-            return Ok(new JsonResults
+            return Ok(new OtherJsonResponse
             {
                 StatusMessage = "selected user's role has been deleted successfully.",
                 Success = true
