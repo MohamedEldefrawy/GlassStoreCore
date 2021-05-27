@@ -20,6 +20,7 @@ namespace GlassStoreCore.Services.UserService
         public UsersService(GlassStoreContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
             : base(context)
         {
+            _signInManager = signInManager;
             _userManager = userManager;
             _context = context;
         }
@@ -38,10 +39,10 @@ namespace GlassStoreCore.Services.UserService
             if (user == null)
                 return null;
 
-            var signInResult = _userManager.CheckPasswordAsync(user, password);
+            var signInResult = _signInManager.PasswordSignInAsync(user, password, true, false);
 
             // check if password is correct
-            if (!signInResult.Result)
+            if (!signInResult.Result.Succeeded)
                 return null;
 
             // authentication successful

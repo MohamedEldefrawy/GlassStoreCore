@@ -8,7 +8,9 @@ namespace GlassStoreCore.Helpers
 {
     public static class JwtToken
     {
+        public static string CurrentToken { get; set; }
         private const string secretKey = "BBAIDf4CZEmxZ2TIGdDJ7w==";
+
         public static readonly SymmetricSecurityKey SigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
         public static string GenerateJwtToken(LoggedInUserDto userDto)
@@ -31,7 +33,17 @@ namespace GlassStoreCore.Helpers
 
             var secToken = new JwtSecurityToken(payload: payLoad, header: header);
             var handler = new JwtSecurityTokenHandler();
-            return handler.WriteToken(secToken);
+
+            Singleton singleton = Singleton.GetInstance;
+            singleton.JwtToken = handler.WriteToken(secToken);
+
+            return singleton.JwtToken;
+        }
+
+        public static void RemoveCurrnetToken()
+        {
+            Singleton singleton = Singleton.GetInstance;
+            singleton.JwtToken = string.Empty;
         }
     }
 }
