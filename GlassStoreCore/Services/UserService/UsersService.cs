@@ -13,10 +13,11 @@ namespace GlassStoreCore.Services.UserService
     public class UsersService : Service<ApplicationUser>, IUsersService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ObjectMapper _mapper = new ObjectMapper();
         private readonly GlassStoreContext _context;
 
-        public UsersService(GlassStoreContext context, UserManager<ApplicationUser> userManager)
+        public UsersService(GlassStoreContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
             : base(context)
         {
             _userManager = userManager;

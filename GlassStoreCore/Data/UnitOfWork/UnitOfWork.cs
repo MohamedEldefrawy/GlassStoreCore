@@ -15,10 +15,10 @@ namespace GlassStoreCore.Data.UnitOfWork
         private readonly GlassStoreContext _context;
         private Hashtable _services;
 
-        public UnitOfWork(GlassStoreContext context, UserManager<ApplicationUser> userManager)
+        public UnitOfWork(GlassStoreContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _context = context;
-            UsersService = new UsersService(_context, userManager);
+            UsersService = new UsersService(_context, userManager, signInManager);
         }
 
         public IService<TEntity> Service<TEntity>() where TEntity : class
