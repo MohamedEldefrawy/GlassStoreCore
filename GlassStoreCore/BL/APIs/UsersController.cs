@@ -80,7 +80,6 @@ namespace GlassStoreCore.BL.APIs
         [HttpPost]
         public ActionResult<ApplicationUser> Login(LoginUserDto loginUserDto)
         {
-
             var result = _usersService.Authenticate(loginUserDto);
             var ApiToken = JwtToken.GenerateJwtToken(result);
 
@@ -97,7 +96,6 @@ namespace GlassStoreCore.BL.APIs
                 StatusMessage = "User has logged in successfully.",
                 Success = true,
                 Token = ApiToken,
-                Data = result
             });
         }
 
@@ -243,8 +241,6 @@ namespace GlassStoreCore.BL.APIs
 
             try
             {
-                //UpdateRoleresult = _usersService.AssignUserRoles(userDto.Id, userDto.Roles).Result;
-
                 foreach (var role in newRoles)
                 {
                     _usersRolesService.Add(new ApplicationUserRole { UserId = userDto.Id, RoleId = role.Id });
