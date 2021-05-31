@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,16 @@ namespace GlassStoreCore.Services.UserService
 
             var user = _context.Users.SingleOrDefault(x => x.UserName == userDto.UserName);
 
+            var roles = _userManager.GetRolesAsync(user);
+            ICollection<RoleNameDto> roleNames = new List<RoleNameDto>();
+            foreach (var role in roles.Result)
+            {
+                roleNames.Add(new RoleNameDto
+                {
+                    Name = role
+                });
+            }
+
 
             // check if username exists
             if (user == null)
@@ -51,7 +62,8 @@ namespace GlassStoreCore.Services.UserService
             return new LoggedInUserDto
             {
                 UserID = user.Id,
-                UserName = user.UserName
+                UserName = user.UserName,
+                Roles = roleNames
             };
         }
 

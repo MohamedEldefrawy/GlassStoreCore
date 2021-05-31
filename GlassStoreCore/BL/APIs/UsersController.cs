@@ -38,7 +38,7 @@ namespace GlassStoreCore.BL.APIs
             _roleService = _paginationUow.GetRolesService();
         }
 
-        [Authorize(Roles = "Adminstrator")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult<ApplicationUser> GetUsers([FromQuery] PaginationFilter filter)
         {

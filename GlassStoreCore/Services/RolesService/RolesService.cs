@@ -1,6 +1,8 @@
 ﻿using GlassStoreCore.BL.Models;
 using GlassStoreCore.Data;
+using GlassStoreCore.Helpers;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace GlassStoreCore.Services.RolesService
@@ -16,7 +18,10 @@ namespace GlassStoreCore.Services.RolesService
 
         public async Task<IdentityResult> AddRole(ApplicationRole role)
         {
-            return await _roleManger.CreateAsync(role);
+            var result = await _roleManger.CreateAsync(role);
+            await _roleManger.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, role.Name));
+
+            return result;
         }
 
         public async Task<IdentityResult> DeleteRole(ApplicationRole role)

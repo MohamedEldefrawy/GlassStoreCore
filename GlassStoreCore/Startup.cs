@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 using FluentValidation.AspNetCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace GlassStoreCore
 {
@@ -41,20 +43,27 @@ namespace GlassStoreCore
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Adminstrator", policy => policy.RequireClaim(CustomClaimTypes.Permission, "Admin"));
+            });
+
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = "JwtBearer";
-                options.DefaultChallengeScheme = "JwtBearer";
-            }).AddJwtBearer("JwtBearer", jwtOptions =>
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(jwtOptions =>
             {
+                jwtOptions.SaveToken = true;
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    IssuerSigningKey = SigningKey,
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidIssuer = "https://localhost:44302/",
                     ValidAudience = "https://localhost:44302/",
-                    ValidateLifetime = true
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = SigningKey
                 };
             });
 
