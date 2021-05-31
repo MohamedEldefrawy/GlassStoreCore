@@ -36,6 +36,7 @@ namespace GlassStoreCore
                                                                               Configuration.GetConnectionString("MyConn")), ServiceLifetime.Transient);
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                    .AddRoles<ApplicationRole>()
                     .AddEntityFrameworkStores<GlassStoreContext>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();

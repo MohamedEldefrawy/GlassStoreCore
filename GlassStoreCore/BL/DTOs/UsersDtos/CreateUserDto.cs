@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using GlassStoreCore.BL.DTOs.UsersRolesDtos;
+using GlassStoreCore.BL.DTOs.RolesDtos;
 
 namespace GlassStoreCore.BL.DTOs.UsersDtos
 {
@@ -10,7 +10,7 @@ namespace GlassStoreCore.BL.DTOs.UsersDtos
         public string ConfirmPassword { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public ICollection<UserRoleDto> Roles { get; set; }
+        public ICollection<RoleNameDto> Roles { get; set; }
 
     }
 }

@@ -1,9 +1,9 @@
-﻿using GlassStoreCore.Data;
-using Microsoft.AspNetCore.Identity;
+﻿using GlassStoreCore.BL.Models;
+using GlassStoreCore.Data;
 
 namespace GlassStoreCore.Services.RolesService
 {
-    public class UsersRolesService : Service<IdentityUserRole<string>>, IUsersRolesService
+    public class UsersRolesService : Service<ApplicationUserRole>, IUsersRolesService
     {
         public UsersRolesService(GlassStoreContext context)
             : base(context)

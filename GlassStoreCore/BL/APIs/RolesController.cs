@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.RolesDtos;
+using GlassStoreCore.BL.Models;
 using GlassStoreCore.Helpers;
 using GlassStoreCore.JsonResponses;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
+using GlassStoreCore.Services.RolesService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,19 +17,18 @@ namespace GlassStoreCore.BL.APIs
     public class RolesController : ControllerBase
     {
         private readonly IPaginationUow _paginationUow;
-        private readonly IService<IdentityRole> _rolesService;
+        private readonly IRolesService _rolesService;
         private readonly ObjectMapper _mapper;
-
 
         public RolesController(IPaginationUow paginationUow, ObjectMapper mapper)
         {
             _mapper = mapper;
             _paginationUow = paginationUow;
-            _rolesService = _paginationUow.Service<IdentityRole>();
+            _rolesService = _paginationUow.GetRolesService();
         }
 
         [HttpGet]
-        public ActionResult<IdentityRole> GetRoles([FromQuery] PaginationFilter filter)
+        public ActionResult<ApplicationRole> GetRoles([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
             var (roles, totalRecords) = _rolesService.GetAll(filter.PageNumber, filter.PageSize);
@@ -41,14 +42,14 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var rolesDtos = roles.Select(_mapper.Mapper.Map<IdentityRole, RoleDto>).ToList();
+            var rolesDtos = roles.Select(_mapper.Mapper.Map<ApplicationRole, RoleDto>).ToList();
             var pageResponse = PaginationHelper.CreatePagedResponse(rolesDtos, filter, totalRecords, _paginationUow, route);
             pageResponse.Message = "request has completed successfully.";
             return Ok(pageResponse);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<IdentityRole> GetRole(string id)
+        public ActionResult<ApplicationRole> GetRole(string id)
         {
             var role = _rolesService.FindById(id);
 
@@ -65,17 +66,17 @@ namespace GlassStoreCore.BL.APIs
             {
                 StatusMessage = "Role has been selected successfully.",
                 Success = true,
-                Data = _mapper.Mapper.Map<IdentityRole, RoleDto>(role)
+                Data = _mapper.Mapper.Map<ApplicationRole, RoleDto>(role)
             });
         }
 
         [HttpPost]
-        public ActionResult<IdentityRole> CreateRole(RoleDto roleDto)
+        public ActionResult<ApplicationRole> CreateRole(RoleDto roleDto)
         {
-            var role = _mapper.Mapper.Map<RoleDto, IdentityRole>(roleDto);
-            var result = _rolesService.Add(role);
+            var role = _mapper.Mapper.Map<RoleDto, ApplicationRole>(roleDto);
+            var result = _rolesService.AddRole(role);
 
-            if (result <= 0)
+            if (!result.Result.Succeeded)
             {
                 return BadRequest(new GetJsonResponse
                 {
@@ -92,7 +93,7 @@ namespace GlassStoreCore.BL.APIs
         }
 
         [HttpPut("{id}")]
-        public ActionResult<IdentityRole> UpdateRole(UpdateRoleDto roleDto, string id)
+        public ActionResult<ApplicationRole> UpdateRole(UpdateRoleDto roleDto, string id)
         {
             var role = _rolesService.FindById(id);
 
@@ -107,9 +108,9 @@ namespace GlassStoreCore.BL.APIs
 
             _mapper.Mapper.Map(roleDto, role);
 
-            var result = _rolesService.Update(role);
+            var result = _rolesService.UpdateRole(role);
 
-            if (result == 0)
+            if (!result.Result.Succeeded)
             {
                 return BadRequest(new OtherJsonResponse
                 {
@@ -120,14 +121,14 @@ namespace GlassStoreCore.BL.APIs
 
             return Ok(new GetJsonResponse
             {
-                StatusMessage = "Selected user not found.",
+                StatusMessage = "Selected role has been updated.",
                 Success = true
 
             });
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<IdentityRole> DeleteRole(string id)
+        public ActionResult<ApplicationRole> DeleteRole(string id)
         {
             var selectedRole = _rolesService.FindById(id);
             if (selectedRole == null)
@@ -139,8 +140,8 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var result = _rolesService.Delete(selectedRole);
-            if (result == 0)
+            var result = _rolesService.DeleteRole(selectedRole);
+            if (!result.Result.Succeeded)
             {
                 return BadRequest(new OtherJsonResponse
                 {

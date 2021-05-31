@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Services;
+using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
 using Microsoft.AspNetCore.Identity;
 
@@ -11,14 +12,16 @@ namespace GlassStoreCore.Data.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private IUsersService UsersService { get; }
+        private IRolesService RolesService { get; }
 
         private readonly GlassStoreContext _context;
         private Hashtable _services;
 
-        public UnitOfWork(GlassStoreContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public UnitOfWork(GlassStoreContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
         {
             _context = context;
             UsersService = new UsersService(_context, userManager, signInManager);
+            RolesService = new RolesService(_context, roleManager);
         }
 
         public IService<TEntity> Service<TEntity>() where TEntity : class
@@ -37,6 +40,12 @@ namespace GlassStoreCore.Data.UnitOfWork
         {
             return UsersService;
         }
+
+        public IRolesService GetRolesService()
+        {
+            return RolesService;
+        }
+
         public void Dispose()
         {
             Dispose(true);

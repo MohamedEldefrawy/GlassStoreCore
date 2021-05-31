@@ -11,6 +11,8 @@ namespace GlassStoreCore.Data
         public DbSet<WholeSaleProducts> WholeSaleProducts { get; set; }
         public DbSet<WholeSaleSellingOrder> WholeSaleSellingOrders { get; set; }
         public DbSet<WholeSaleSellingOrderDetails> WholeSaleSellingOrderDetails { get; set; }
+        public DbSet<ApplicationRole> Roles { get; set; }
+        public DbSet<ApplicationUserRole> UserRoles { get; set; }
         public GlassStoreContext(
             DbContextOptions options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)

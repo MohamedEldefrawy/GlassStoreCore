@@ -23,11 +23,11 @@ namespace GlassStoreCore.BL
                                                  {
                                                      cfg.CreateMap<ApplicationUser, CreateUserDto>().ReverseMap();
                                                      cfg.CreateMap<ApplicationUser, UserDto>().ReverseMap();
-                                                     cfg.CreateMap<IdentityUserRole<string>, UserRoleDto>().ReverseMap();
-                                                     cfg.CreateMap<RoleDto, IdentityRole>().ReverseMap();
-                                                     cfg.CreateMap<UserRoleDto, IdentityUserRole<string>>().ReverseMap();
-                                                     cfg.CreateMap<UpdateRoleDto, IdentityRole>().ReverseMap();
-                                                     cfg.CreateMap<IdentityUserRole<string>, UpdateUserRole>().ReverseMap();
+                                                     cfg.CreateMap<ApplicationUserRole, UserRoleDto>().ReverseMap();
+                                                     cfg.CreateMap<RoleDto, ApplicationRole>().ReverseMap();
+                                                     cfg.CreateMap<UserRoleDto, ApplicationUserRole>().ReverseMap();
+                                                     cfg.CreateMap<UpdateRoleDto, ApplicationRole>().ReverseMap();
+                                                     cfg.CreateMap<ApplicationUserRole, UpdateUserRole>().ReverseMap();
                                                      cfg.CreateMap<WholeSaleProductsDto, WholeSaleProducts>().ReverseMap();
                                                      cfg.CreateMap<WholeSaleProductsOrderDetailsDto, WholeSaleSellingOrderDetails>().ReverseMap();
                                                      cfg.CreateMap<WholeSaleSellingOrder, WholeSaleSellingOrdersDto>().ReverseMap();

@@ -1,11 +1,11 @@
 ﻿using GlassStoreCore.BL.APIs.Filters;
 using GlassStoreCore.BL.DTOs.UsersDtos;
-using GlassStoreCore.BL.DTOs.UsersRolesDtos;
 using GlassStoreCore.BL.Models;
 using GlassStoreCore.Helpers;
 using GlassStoreCore.JsonResponses;
 using GlassStoreCore.Services;
 using GlassStoreCore.Services.PaginationUowService;
+using GlassStoreCore.Services.RolesService;
 using GlassStoreCore.Services.UserService;
 using GlassStoreCore.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -23,33 +23,35 @@ namespace GlassStoreCore.BL.APIs
     {
         private readonly ObjectMapper _mapper;
         private readonly IPaginationUow _paginationUow;
-        private readonly IService<IdentityUserRole<string>> _userRolesService;
         private readonly IUsersService _usersService;
-        private Singleton singleton;
+        private readonly Singleton _singleton;
+        private readonly IService<IdentityUserRole<string>> _usersRolesService;
+        private readonly IRolesService _roleService;
 
         public UsersController(IPaginationUow paginationUow, ObjectMapper mapper)
         {
             _paginationUow = paginationUow;
             _mapper = mapper;
             _usersService = _paginationUow.GetUsersService();
-            _userRolesService = _paginationUow.Service<IdentityUserRole<string>>();
-            singleton = Singleton.GetInstance;
+            _singleton = Singleton.GetInstance;
+            _usersRolesService = _paginationUow.Service<IdentityUserRole<string>>();
+            _roleService = _paginationUow.GetRolesService();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Adminstrator")]
         [HttpGet]
         public ActionResult<ApplicationUser> GetUsers([FromQuery] PaginationFilter filter)
         {
             var route = Request.Path.Value;
             var (users, totalRecords) = _usersService.GetAll(filter.PageNumber, filter.PageSize);
 
-            if (singleton.JwtToken == string.Empty)
+            if (_singleton.JwtToken == string.Empty)
             {
-                return (BadRequest(new OtherJsonResponse
+                return BadRequest(new OtherJsonResponse
                 {
                     StatusMessage = "Please Login first",
                     Success = false
-                }));
+                });
             }
 
             if (users == null)
@@ -61,21 +63,13 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
+
             var usersDtos = users.Select(_mapper.Mapper.Map<ApplicationUser, UserDto>).ToList();
 
-            foreach (var user in usersDtos)
+            for (int i = 0; i < usersDtos.Count; i++)
             {
-                var userRoles = _userRolesService.GetAll(u => u.UserId == user.Id);
-                user.Roles = new List<UserRoleDto>();
-
-                foreach (var role in userRoles)
-                {
-                    user.Roles.Add(new UserRoleDto
-                    {
-                        RoleId = role.RoleId,
-                        UserId = role.UserId
-                    });
-                }
+                UserDto user = usersDtos[i];
+                user.Roles = _usersService.GetUserRoles(users[i]).Result;
             }
 
             var pageResponse = PaginationHelper.CreatePagedResponse(usersDtos, filter, totalRecords, _paginationUow, route);
@@ -139,18 +133,9 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var userRoles = _userRolesService.GetAll(u => u.UserId == id);
             var userDto = _mapper.Mapper.Map<ApplicationUser, UserDto>(user);
+            userDto.Roles = _usersService.GetUserRoles(user).Result;
 
-            userDto.Roles = new List<UserRoleDto>();
-            foreach (var role in userRoles)
-            {
-                userDto.Roles.Add(new UserRoleDto
-                {
-                    UserId = role.UserId,
-                    RoleId = role.RoleId
-                });
-            }
             return Ok(new GetJsonResponse
             {
                 StatusMessage = "User has been selected successfully.",
@@ -162,9 +147,7 @@ namespace GlassStoreCore.BL.APIs
         [HttpDelete("{id}")]
         public ActionResult<ApplicationUser> DeleteUser(string id)
         {
-            var userService = _usersService;
-
-            var selectedUser = userService.FindById(id);
+            var selectedUser = _usersService.FindById(id);
             if (selectedUser == null)
             {
                 return NotFound(new OtherJsonResponse
@@ -174,7 +157,7 @@ namespace GlassStoreCore.BL.APIs
                 });
             }
 
-            var result = userService.Delete(selectedUser);
+            var result = _usersService.Delete(selectedUser);
 
             if (result == 0)
             {
@@ -209,16 +192,11 @@ namespace GlassStoreCore.BL.APIs
 
             var result = _usersService.CreateUser(userDto);
 
-            foreach (var role in userDto.Roles)
+            if (result.Result == null)
             {
-                role.UserId = result.Result.Id;
-                _userRolesService.Add(new IdentityUserRole<string>()
-                {
-                    UserId = role.UserId,
-                    RoleId = role.RoleId
-                });
-                _paginationUow.Complete();
+                return BadRequest(new OtherJsonResponse { StatusMessage = "Couldn't create user", Success = false });
             }
+
             return Ok(new OtherJsonResponse
             {
                 StatusMessage = "User Created Successfully.",
@@ -226,10 +204,11 @@ namespace GlassStoreCore.BL.APIs
             });
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<ApplicationUser> UpdateUser(UserDto userDto, string id)
+        [HttpPut]
+        public ActionResult<ApplicationUser> UpdateUser(UserDto userDto)
         {
-            var user = _usersService.FindById(id);
+            var user = _usersService.FindById(userDto.Id);
+
             if (user == null)
             {
                 return NotFound(new OtherJsonResponse
@@ -240,20 +219,52 @@ namespace GlassStoreCore.BL.APIs
             }
 
             _mapper.Mapper.Map(userDto, user);
-            user.Id = id;
 
-            var userRoles = _userRolesService.GetAll(u => u.UserId == userDto.Id);
+            var selectedUserRoles = _usersRolesService.GetAll(r => r.UserId == userDto.Id).ToList();
 
-            foreach (var userRole in userRoles)
+            if (selectedUserRoles.Count > 0)
             {
-                _userRolesService.Delete(userRole);
+                foreach (var role in selectedUserRoles)
+                {
+                    _usersRolesService.Delete(new ApplicationUserRole
+                    {
+                        UserId = userDto.Id,
+                        RoleId = role.RoleId
+                    });
+                }
             }
 
+            var newRoles = new List<ApplicationRole>();
             foreach (var role in userDto.Roles)
             {
-                var updatedUserRole = _mapper.Mapper.Map<UserRoleDto, IdentityUserRole<string>>(role);
-                updatedUserRole.UserId = userDto.Id;
-                _userRolesService.Add(updatedUserRole);
+                newRoles.Add(_roleService.GetAll(r => r.Name == role.Name).SingleOrDefault());
+            }
+
+
+            try
+            {
+                //UpdateRoleresult = _usersService.AssignUserRoles(userDto.Id, userDto.Roles).Result;
+
+                foreach (var role in newRoles)
+                {
+                    _usersRolesService.Add(new ApplicationUserRole { UserId = userDto.Id, RoleId = role.Id });
+                }
+            }
+            catch (System.AggregateException e)
+            {
+                foreach (var role in selectedUserRoles)
+                {
+                    _usersRolesService.Add(new ApplicationUserRole
+                    {
+                        UserId = userDto.Id,
+                        RoleId = role.RoleId
+                    });
+                }
+                return BadRequest(new OtherJsonResponse
+                {
+                    StatusMessage = e.Message,
+                    Success = false
+                });
             }
 
             var result = _usersService.Update(user);
@@ -266,6 +277,7 @@ namespace GlassStoreCore.BL.APIs
                     Success = false
                 });
             }
+
             return Ok(new OtherJsonResponse
             {
                 StatusMessage = "Selected user has been updated successfully.",

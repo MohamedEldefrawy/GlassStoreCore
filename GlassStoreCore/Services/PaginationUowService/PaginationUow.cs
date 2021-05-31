@@ -14,8 +14,10 @@ namespace GlassStoreCore.Services.PaginationUowService
     {
         private readonly string _baseUri;
 
-        public PaginationUow(GlassStoreContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IServiceProvider serviceProvider)
-            : base(context, userManager, signInManager)
+        public PaginationUow(GlassStoreContext context, UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager,
+            IServiceProvider serviceProvider)
+            : base(context, userManager, signInManager, roleManager)
         {
             var accessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
             var request = accessor.HttpContext.Request;

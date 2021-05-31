@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GlassStoreCore.BL.Models;
 
 namespace GlassStoreCore.Services.RolesService
 {
-    public interface IUsersRolesService : IService<IdentityUserRole<string>>
+    public interface IUsersRolesService : IService<ApplicationUserRole>
     {
 
     }
